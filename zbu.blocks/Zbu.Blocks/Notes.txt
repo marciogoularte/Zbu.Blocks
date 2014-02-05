@@ -1,0 +1,2 @@
+﻿Install-Package Newtonsoft.Json -Version 4.5.11
+=> use the same version Umbraco 6.2 uses
