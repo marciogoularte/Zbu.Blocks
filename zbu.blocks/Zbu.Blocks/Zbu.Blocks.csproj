@@ -42,17 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockData.cs" />
-    <Compile Include="BlockDataWithLevel.cs" />
-    <Compile Include="BlockTemp.cs" />
+    <Compile Include="BlockDataValue.cs" />
+    <Compile Include="TempBlock.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderingBlock.cs" />
+    <Compile Include="RenderingBlockCollection.cs" />
     <Compile Include="RenderingStructure.cs" />
-    <Compile Include="StructureData.cs" />
-    <Compile Include="StructureDataWithLevel.cs" />
-    <Compile Include="StructureTemp.cs" />
+    <Compile Include="StructureDataValue.cs" />
+    <Compile Include="TempStructure.cs" />
     <Compile Include="Temp.cs" />
+    <Compile Include="WithLevel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

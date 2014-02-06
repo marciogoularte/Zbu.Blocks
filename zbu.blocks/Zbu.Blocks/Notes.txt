@@ -5,14 +5,39 @@ TODO
 
 migrate all notes here
 
+blocks collections should be dictionaries
+RendereingBlockCollection
+with indexer, but not all have names
+
+properly handle casing of names, etc
+create a StructureException to properly report structure exceptions
+
+Description
+Name (makes it unique)
+Type (gets from config)
+Source (overrides name)
+
+do we want named structures?
+do we want partial structures on children?
+
+missing DataJson for what's not a fragment
+missing handling AJAX & MOBILE management... different structures?
 missing Fragment / FragmentType management
   "FragmentType": "BlockInsertImage"
-blocks collections should be dictionaries
+
 do we need a blockType notion to describe which blocks fit within witch blocks?
   "type": "insert-image"
+these would be site-wide and defined in a config file
+also
+  Source -> Name (and used as a source)
+  Source still exists to override Name
+  Need a new Desc field
+  Type can reference an existing type
 
 structure:
 {
+	"Description": "...",
+	"Name": "...",
 	"Source": "...",
 	"IsReset": true|false,
 	"MinLevel": 000,
@@ -22,16 +47,23 @@ structure:
 
 block:
 {
-	"Source": "...",
-	"Key": "...",
+	"Description": "...",
 	"Name": "...",
-	"IsUnique": true|false,
+	"Type": "...",
+	"Source": "...",
 	"IsKill": true|false,
 	"IsReset": true|false,
 	"MinLevel": 000,
 	"MaxLevel": 000,
+	"DataJson": "...",
 	"FragmentJson": "...",
 	"Blocks": [ ... ]
+}
+
+{
+	"Name": "video",
+	"Type": "video", -> can define some values such as "Source"
+	"FragmentJson": "{ \"videoId\": 1234 }"
 }
 
 

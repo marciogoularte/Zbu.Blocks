@@ -9,20 +9,40 @@ namespace Zbu.Blocks
     public class RenderingBlock
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderingBlock"/> class with a source, a key,
-        /// a collection of blocks and a content fragment.
+        /// Initializes a new instance of the <see cref="RenderingBlock"/> class with a name, a source,
+        /// a collection of blocks, and data and fragment json.
         /// </summary>
+        /// <param name="name">The name of the block.</param>
         /// <param name="source">The block source.</param>
-        /// <param name="key">The block key.</param>
         /// <param name="blocks">The block inner blocks.</param>
-        /// <param name="fragment">The block content fragment.</param>
-        public RenderingBlock(string source, string key, IEnumerable<RenderingBlock> blocks, PublishedContentFragment fragment)
+        /// <param name="dataJson">The block data json.</param>
+        /// <param name="fragmentJson">The block content fragment json.</param>
+        public RenderingBlock(string name, string source, IEnumerable<RenderingBlock> blocks, 
+            string dataJson, string fragmentJson)
         {
+            Name = name;
             Source = source;
-            Key = key;
-            Blocks = blocks.ToArray();
-            Fragment = fragment;
+            Blocks = new RenderingBlockCollection(blocks);
+            Data = CreateDataFromJson(dataJson);
+            Fragment = CreateFragmentFromJson(fragmentJson);
         }
+
+        // fixme
+        Dictionary<string, object> CreateDataFromJson(string json)
+        {
+            return new Dictionary<string, object>();
+        }
+
+        // fixme
+        PublishedContentFragment CreateFragmentFromJson(string json)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the block.
+        /// </summary>
+        public string Name { get; private set; }
 
         /// <summary>
         /// Gets or sets the source of the block.
@@ -31,14 +51,14 @@ namespace Zbu.Blocks
         public string Source { get; private set; }
 
         /// <summary>
-        /// Gets or sets the key of the block.
-        /// </summary>
-        public string Key { get; private set; }
-
-        /// <summary>
         /// Gets or sets the inner blocks collection of the block.
         /// </summary>
-        public RenderingBlock[] Blocks { get; private set; }
+        public RenderingBlockCollection Blocks { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the block content fragment.
+        /// </summary>
+        public IDictionary<string, object> Data{ get; private set; }
 
         /// <summary>
         /// Gets or sets the block content fragment.

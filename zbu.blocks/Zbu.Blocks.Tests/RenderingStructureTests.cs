@@ -11,22 +11,18 @@ namespace Zbu.Blocks.Tests
         {
             // test that one basic structure can be processed
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test\","
-                    + "\"Name\":\"\","
-                    + "\"IsReset\":false,"
-                    + "\"MinLevel\":0,"
-                    + "\"MaxLevel\":666,"
-                    + "\"Blocks\":[]"
-                + "}"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test\""
+                    + "}"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json)
+                Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
@@ -42,20 +38,21 @@ namespace Zbu.Blocks.Tests
             // test structures order when two structures exist
             // test2 should be picked
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test1\""
-                + "},"
-                + "{"
-                    + "\"Source\":\"test2\""
-                + "},"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\""
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\""
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json)
+                Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
@@ -71,21 +68,22 @@ namespace Zbu.Blocks.Tests
             // test structure exclusion by level
             // same as test above, but test2 is ignored
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test1\""
-                + "},"
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"MinLevel\":8"
-                + "},"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\""
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"MinLevel\":8"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json)
+                Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
@@ -100,22 +98,18 @@ namespace Zbu.Blocks.Tests
         {
             // test that one basic structure can be processed
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test\","
-                    + "\"Name\":\"\","
-                    + "\"IsReset\":false,"
-                    + "\"MinLevel\":0,"
-                    + "\"MaxLevel\":666,"
-                    + "\"Blocks\":[]"
-                + "}"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test\""
+                    + "}"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json),
                 Parent = new PublishedContent()
             };
 
@@ -131,15 +125,11 @@ namespace Zbu.Blocks.Tests
         {
             // test that one basic structure, defined on parent, can be processed
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test\","
-                    + "\"Name\":\"\","
-                    + "\"IsReset\":false,"
-                    + "\"MinLevel\":0,"
-                    + "\"MaxLevel\":666,"
-                    + "\"Blocks\":[]"
-                + "}"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test\""
+                    + "}"
                 + "]";
 
             var serializer = new JsonSerializer();
@@ -148,7 +138,7 @@ namespace Zbu.Blocks.Tests
             {
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json)
                 }
             };
 
@@ -164,26 +154,28 @@ namespace Zbu.Blocks.Tests
         {
             // test that structures at various levels can be processed
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\""
-                + "}"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\""
+                    + "}"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\""
-                + "}"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\""
+                    + "}"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -199,29 +191,31 @@ namespace Zbu.Blocks.Tests
         {
             // test that levels work with parents
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"MinLevel\":1,"
-                    + "\"MaxLevel\":1"
-                + "}"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"MinLevel\":1,"
+                        + "\"MaxLevel\":1"
+                    + "}"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"MinLevel\":8"
-                + "}"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"MinLevel\":8"
+                    + "}"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -237,36 +231,33 @@ namespace Zbu.Blocks.Tests
         {
             // ensure it works
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test\","
-                    + "\"Name\":\"\","
-                    + "\"IsReset\":false,"
-                    + "\"MinLevel\":0,"
-                    + "\"MaxLevel\":666,"
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b1\","
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"b2\","
-                        + "},"
-                    + "]"
-                + "}"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1\","
+                            + "},"
+                            + "{"
+                                + "\"Source\":\"b2\","
+                            + "},"
+                        + "]"
+                    + "}"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json)
+                Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test", s.Source);
-            Assert.AreEqual(2, s.Blocks.Length);
+            Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
@@ -276,37 +267,38 @@ namespace Zbu.Blocks.Tests
         {
             // ensure blocks are in the right order
 
-            const string json = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b2\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json)
+                Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(2, s.Blocks.Length);
+            Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
@@ -316,36 +308,38 @@ namespace Zbu.Blocks.Tests
         {
             // ensure blocks are in the right order
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b2\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -353,48 +347,48 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(2, s.Blocks.Length);
+            Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksNonUnique()
+        public void TwoStructuresTwoLevelsWithAnonymousBlocks()
         {
             // ensure blocks are in the right order
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"Name\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"Name\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b2\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -402,49 +396,49 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(2, s.Blocks.Length);
-            Assert.AreEqual("b", s.Blocks[0].Source);
-            Assert.AreEqual("b", s.Blocks[1].Source);
+            Assert.AreEqual(2, s.Blocks.Count);
+            Assert.AreEqual("b1", s.Blocks[0].Source);
+            Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksUnique()
+        public void TwoStructuresTwoLevelsWithNamedBlocks()
         {
             // ensure blocks are in the right order
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            +"\"IsUnique\":true,"
-                            + "\"Name\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b\","
+                                + "\"Name\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"Name\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -452,93 +446,49 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(1, s.Blocks.Length);
+            Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b", s.Blocks[0].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksInvalidUnique1()
+        public void TwoStructuresTwoLevelsWithNamedBlocksError()
         {
-            // cannot set IsUnique on block other than top-most
+            // ensure blocks are in the right order
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"Name\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b\","
+                                + "\"Name\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"IsUnique\":true,"
-                            + "\"Name\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 =
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"c\","
+                                + "\"Name\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
-                }
-            };
-
-            Assert.Throws<Exception>(() => RenderingStructure.Compute(p, x => x.Structures));
-        }
-
-        [Test]
-        public void TwoStructuresTwoLevelsWithBlocksInvalidUnique2()
-        {
-            // cannot set isUnique twice
-
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"IsUnique\":true,"
-                            + "\"Name\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
-                + "]";
-
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"IsUnique\":true,"
-                            + "\"Name\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
-                + "]";
-
-            var serializer = new JsonSerializer();
-
-            var p = new PublishedContent
-            {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
-                Parent = new PublishedContent
-                {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -577,10 +527,10 @@ namespace Zbu.Blocks.Tests
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -588,7 +538,7 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("default", s.Source);
-            Assert.AreEqual(1, s.Blocks.Length);
+            Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b2", s.Blocks[0].Source);
         }
 
@@ -639,10 +589,10 @@ namespace Zbu.Blocks.Tests
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -650,57 +600,59 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(2, s.Blocks.Length);
+            Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksUniqueAndSubBlocks()
+        public void TwoStructuresTwoLevelsWithNamedBlocksAndSubBlocks()
         {
             // ensure blocks are in the right order
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"IsUnique\":true,"
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b1\","
-                                + "},"
-                            + "]"
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b\","
+                                + "\"Name\":\"b\","
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b1\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b2\","
-                                + "},"
-                            + "]"
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"b\","
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b2\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -708,60 +660,62 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(1, s.Blocks.Length);
+            Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b", s.Blocks[0].Source);
-            Assert.AreEqual(2, s.Blocks[0].Blocks.Length);
+            Assert.AreEqual(2, s.Blocks[0].Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[0].Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksUniqueAndSubBlocksAndReset()
+        public void TwoStructuresTwoLevelsWithNamedBlocksAndSubBlocksAndReset()
         {
             // ensure reset works
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"IsUnique\":true,"
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b1\","
-                                + "},"
-                            + "]"
-                        + "},"
-                    + "]"
-                + "},"
-            + "]";
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"b\","
+                                + "\"Source\":\"b\","
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b1\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b\","
-                            + "\"IsReset\":true,"
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b2\","
-                                + "},"
-                            + "]"
-                        + "},"
-                    + "]"
-                + "},"
-            + "]";
+            const string json2 =
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"b\","
+                                + "\"IsReset\":true,"
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b2\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -769,71 +723,72 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(1, s.Blocks.Length);
+            Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b", s.Blocks[0].Source);
-            Assert.AreEqual(1, s.Blocks[0].Blocks.Length);
+            Assert.AreEqual(1, s.Blocks[0].Blocks.Count);
             Assert.AreEqual("b2", s.Blocks[0].Blocks[0].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksUniqueAndSubBlocksAndKill()
+        public void TwoStructuresTwoLevelsWithNamedBlocksAndSubBlocksAndKill()
         {
             // ensure reset works
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"ba\","
-                            + "\"IsUnique\":true,"
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b1\","
-                                + "},"
-                            + "]"
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"bb\","
-                            + "\"IsUnique\":true,"
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b1\","
-                                + "},"
-                            + "]"
-                        + "},"
-                    + "]"
-                + "},"
-            + "]";
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"ba\","
+                                + "\"Source\":\"ba\","
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b1\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                            + "{"
+                                + "\"Name\":\"bb\","
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b1\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"ba\","
-                            + "\"Blocks\":["
-                                + "{"
-                                    + "\"Source\":\"b2\","
-                                + "},"
-                            + "]"
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"bb\","
-                            + "\"IsKill\":true,"
-                        + "},"
-                    + "]"
-                + "},"
-            + "]";
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"ba\","
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Source\":\"b2\","
+                                    + "},"
+                                + "]"
+                            + "},"
+                            + "{"
+                                + "\"Name\":\"bb\","
+                                + "\"IsKill\":true,"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
 
             var serializer = new JsonSerializer();
 
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureData[]>(json2),
+                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureData[]>(json1)
+                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -841,9 +796,9 @@ namespace Zbu.Blocks.Tests
 
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
-            Assert.AreEqual(1, s.Blocks.Length);
+            Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("ba", s.Blocks[0].Source);
-            Assert.AreEqual(2, s.Blocks[0].Blocks.Length);
+            Assert.AreEqual(2, s.Blocks[0].Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[0].Blocks[1].Source);
         }

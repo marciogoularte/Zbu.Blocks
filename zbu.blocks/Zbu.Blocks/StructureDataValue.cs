@@ -1,20 +1,24 @@
+using System.ComponentModel;
+
 namespace Zbu.Blocks
 {
     /// <summary>
-    /// Represents the JSON structure data.
+    /// Represents the JSON structure data value.
     /// </summary>
-    public class StructureData
+    /// <remarks>The Umbraco DataType returns an enumeration of <c>StructureData</c> instances.</remarks>
+    public class StructureDataValue
     {
-        private readonly static BlockData[] NoBlocks = {};
+        private readonly static BlockDataValue[] NoBlocks = {};
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StructureData"/> class.
+        /// Initializes a new instance of the <see cref="StructureDataValue"/> class.
         /// </summary>
-        public StructureData()
+        public StructureDataValue()
         {
             // initialize with default values
-            Source = "default";
+            Description = string.Empty;
             Name = string.Empty;
+            Source = string.Empty;
             IsReset = false;
             MinLevel = 0;
             MaxLevel = int.MaxValue;
@@ -22,14 +26,20 @@ namespace Zbu.Blocks
         }
 
         /// <summary>
+        /// Gets or sets the description of the structure.
+        /// </summary>
+        /// <remarks>Description is free text.</remarks>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the structure.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the source of the structure.
         /// </summary>
         public string Source { get; set; }
-
-        /// <summary>
-        /// Gets or sets the friendly name of the structure.
-        /// </summary>
-        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the structure resets the chain,
@@ -50,6 +60,6 @@ namespace Zbu.Blocks
         /// <summary>
         /// Gets or sets the blocks collection of the structure.
         /// </summary>
-        public BlockData[] Blocks { get; set; }
+        public BlockDataValue[] Blocks { get; set; }
     }
 }
