@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="JsonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests.cs" />
+    <Compile Include="RenderingStructureTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zbu.Blocks\Zbu.Blocks.csproj">

@@ -1,2 +1,56 @@
 ﻿Install-Package Newtonsoft.Json -Version 4.5.11
 => use the same version Umbraco 6.2 uses
+
+TODO
+
+migrate all notes here
+
+missing Fragment / FragmentType management
+  "FragmentType": "BlockInsertImage"
+blocks collections should be dictionaries
+do we need a blockType notion to describe which blocks fit within witch blocks?
+  "type": "insert-image"
+
+structure:
+{
+	"Source": "...",
+	"IsReset": true|false,
+	"MinLevel": 000,
+	"MaxLevel": 000,
+	"Blocks": [ ... ]
+}
+
+block:
+{
+	"Source": "...",
+	"Key": "...",
+	"Name": "...",
+	"IsUnique": true|false,
+	"IsKill": true|false,
+	"IsReset": true|false,
+	"MinLevel": 000,
+	"MaxLevel": 000,
+	"FragmentJson": "...",
+	"Blocks": [ ... ]
+}
+
+
+
+@{
+	Layout = model.Structures.Source;
+}
+@Blocks.Render(model.Structures)
+
+<div>
+	@Blocks.Render(model.Structure.Blocks["header"]);
+</div>
+
+<div>
+	@foreach (var block in model.Structure.Blocks)
+	{
+		@Blocks.Render(block)
+	}
+</div>
+
+<img src="@model.Structure.Fragment.Image.Urls.CropResized(100, 100)" />
+"FragmentJson": "{ \"image\": 1234, \"legend\": \"a nice image\" }"
