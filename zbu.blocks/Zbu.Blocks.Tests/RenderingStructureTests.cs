@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 
 namespace Zbu.Blocks.Tests
@@ -7,7 +9,7 @@ namespace Zbu.Blocks.Tests
     public class RenderingStructureTests
     {
         [Test]
-        public void SingleLevelSingleStructure()
+        public void OneContentOneStructure()
         {
             // test that one basic structure can be processed
 
@@ -26,14 +28,14 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
 
         [Test]
-        public void SingleLevelDualStructures()
+        public void OneContentTwoStructures()
         {
             // test structures order when two structures exist
             // test2 should be picked
@@ -56,14 +58,14 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test2", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
 
         [Test]
-        public void SingleLevelDualStructuresWithLevel()
+        public void OneContentTwoStructuresWithLevels()
         {
             // test structure exclusion by level
             // same as test above, but test2 is ignored
@@ -87,14 +89,14 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test1", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
 
         [Test]
-        public void MultipleLevelSingleStructure()
+        public void TwoContentsOneStructureOnChild()
         {
             // test that one basic structure can be processed
 
@@ -114,14 +116,14 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
 
         [Test]
-        public void MultipleLevelSingleStructureOnParent()
+        public void TwoContentsOneStructureOnParent()
         {
             // test that one basic structure, defined on parent, can be processed
 
@@ -143,14 +145,14 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
 
         [Test]
-        public void MultipleLevelDualStructures()
+        public void TwoContentsTwoStructures()
         {
             // test that structures at various levels can be processed
 
@@ -180,14 +182,14 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test2", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
 
         [Test]
-        public void MultipleLevelDualStructuresWithLevel()
+        public void TwoContentsTwoStructuresWithLevels()
         {
             // test that levels work with parents
 
@@ -220,8 +222,8 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test1", s.Source);
             Assert.IsEmpty(s.Blocks);
         }
@@ -254,16 +256,17 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test", s.Source);
+
             Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresWithBlocks()
+        public void OneContentTwoStructuresWithBlocks()
         {
             // ensure blocks are in the right order
 
@@ -295,16 +298,17 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test2", s.Source);
+
             Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocks()
+        public void TwoContentsTwoStructuresWithBlocks()
         {
             // ensure blocks are in the right order
 
@@ -344,16 +348,17 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test2", s.Source);
+
             Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithAnonymousBlocks()
+        public void TwoContentsTwoStructuresWithAnonymousBlocks()
         {
             // ensure blocks are in the right order
 
@@ -393,16 +398,18 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
             Assert.AreEqual("test2", s.Source);
+
             Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
+        //-
         [Test]
-        public void TwoStructuresTwoLevelsWithNamedBlocks()
+        public void TwoContentsTwoStructuresWithNamedBlocks()
         {
             // ensure blocks are in the right order
 
@@ -412,8 +419,8 @@ namespace Zbu.Blocks.Tests
                         + "\"Source\":\"test1\","
                         + "\"Blocks\":["
                             + "{"
+                                + "\"Name\":\"b1\","
                                 + "\"Source\":\"b\","
-                                + "\"Name\":\"b1\","
                             + "},"
                         + "]"
                     + "},"
@@ -443,26 +450,26 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
+
             Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b", s.Blocks[0].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithNamedBlocksError()
+        public void TwoContentsTwoStructuresWithNamedBlocksOverride()
         {
-            // ensure blocks are in the right order
+            // test named blocks can be overriden
 
             const string json1 =
                 "["
                     + "{"
-                        + "\"Source\":\"test1\","
+                        + "\"Source\":\"test1\"," // template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Source\":\"b\","
-                                + "\"Name\":\"b1\","
+                                + "\"Name\":\"b\"," // defined a name block
+                                + "\"Source\":\"source1\"," // with a source
                             + "},"
                         + "]"
                     + "},"
@@ -471,11 +478,11 @@ namespace Zbu.Blocks.Tests
             const string json2 =
                 "["
                     + "{"
-                        + "\"Source\":\"test2\","
+                        + "\"Source\":\"test2\"," // use another template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Source\":\"c\","
-                                + "\"Name\":\"b1\","
+                                + "\"Name\":\"b\"," // named => same block
+                                + "\"Source\":\"source2\"," // override the source
                             + "},"
                         + "]"
                     + "},"
@@ -492,35 +499,48 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            Assert.Throws<Exception>(() => RenderingStructure.Compute(p, x => x.Structures));
+            var s = RenderingStructure.Compute(p, x => x.Structures);
+            Assert.IsNotNull(s);
+
+            // template is ok
+            Assert.AreEqual("test2", s.Source);
+
+            // one block
+            Assert.AreEqual(1, s.Blocks.Count);
+            Assert.AreEqual("b", s.Blocks[0].Name);
+
+            // source has been overriden
+            Assert.AreEqual("source2", s.Blocks[0].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksAndReset()
+        public void TwoContentsTwoStructuresWithBlocksAndReset()
         {
-            // ensure reset works
-            // because the structure resets, the entire structures above it are ignored
+            // test structure reset
+            // ie entire structures above are ignored
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b1\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\"," // template
+                        + "\"Blocks\":[" // blocks
+                            + "{"
+                                + "\"Source\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"IsReset\":true,"
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b2\","
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"IsReset\":true," // reset => ignore above
+                        + "\"Blocks\":[" // blocks
+                            + "{"
+                                + "\"Source\":\"b2\","
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
@@ -535,54 +555,59 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
+            // template is default because top is ignored
             Assert.AreEqual("default", s.Source);
+
+            // only one block because top is ignored
             Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b2", s.Blocks[0].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithBlocksAndMinLevel()
+        public void TwoContentsTwoStructuresWithBlocksAndMinLevel()
         {
             // ensure blocks are in the right order
 
-            const string json1 = "["
-                + "{"
-                    + "\"Source\":\"test1\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b1before\","
-                            + "\"MinLevel\":8"
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"b1\","
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"b1before\","
-                            + "\"MinLevel\":8"
-                        + "},"
-                    + "]"
-                + "},"
+            const string json1 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\"," // template
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1before\"," // block with minlevel
+                                + "\"MinLevel\":8"
+                            + "},"
+                            + "{"
+                                + "\"Source\":\"b1\"," // block
+                            + "},"
+                            + "{"
+                                + "\"Source\":\"b1before\"," // block with minlevel
+                                + "\"MinLevel\":8"
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
-            const string json2 = "["
-                + "{"
-                    + "\"Source\":\"test2\","
-                    + "\"Blocks\":["
-                        + "{"
-                            + "\"Source\":\"b2before\","
-                            + "\"MinLevel\":8"
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"b2\","
-                        + "},"
-                        + "{"
-                            + "\"Source\":\"b2after\","
-                            + "\"MinLevel\":8"
-                        + "},"
-                    + "]"
-                + "},"
+            const string json2 = 
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\"," // use another template
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b2before\"," // block with minlevel
+                                + "\"MinLevel\":8"
+                            + "},"
+                            + "{"
+                                + "\"Source\":\"b2\"," // block
+                            + "},"
+                            + "{"
+                                + "\"Source\":\"b2after\"," // block with minlevel
+                                + "\"MinLevel\":8"
+                            + "},"
+                        + "]"
+                    + "},"
                 + "]";
 
             var serializer = new JsonSerializer();
@@ -597,28 +622,31 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
+            // template is ok
             Assert.AreEqual("test2", s.Source);
+
+            // only blocks with appropriate level are here
             Assert.AreEqual(2, s.Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithNamedBlocksAndSubBlocks()
+        public void TwoContentsTwoStructuresWithNamedBlocksAndSubBlocks()
         {
             // ensure blocks are in the right order
 
             const string json1 = 
                 "["
                     + "{"
-                        + "\"Source\":\"test1\","
+                        + "\"Source\":\"test1\"," // template
                         + "\"Blocks\":["
                             + "{"
+                                + "\"Name\":\"b\"," // define a named block
                                 + "\"Source\":\"b\","
-                                + "\"Name\":\"b\","
-                                + "\"Blocks\":["
+                                + "\"Blocks\":[" // define sub-blocks
                                     + "{"
                                         + "\"Source\":\"b1\","
                                     + "},"
@@ -631,11 +659,11 @@ namespace Zbu.Blocks.Tests
             const string json2 = 
                 "["
                     + "{"
-                        + "\"Source\":\"test2\","
+                        + "\"Source\":\"test2\"," // use another template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Name\":\"b\","
-                                + "\"Blocks\":["
+                                + "\"Name\":\"b\"," // named => same block
+                                + "\"Blocks\":[" // add sub-blocks
                                     + "{"
                                         + "\"Source\":\"b2\","
                                     + "},"
@@ -657,30 +685,35 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
+            // template is ok
             Assert.AreEqual("test2", s.Source);
+
+            // one block
             Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b", s.Blocks[0].Source);
+
+            // containing two sub-blocks in the right order
             Assert.AreEqual(2, s.Blocks[0].Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[0].Blocks[1].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithNamedBlocksAndSubBlocksAndReset()
+        public void TwoContentsTwoStructuresWithNamedBlocksAndSubBlocksAndReset()
         {
-            // ensure reset works
+            // test block reset
 
             const string json1 = 
                 "["
                     + "{"
-                        + "\"Source\":\"test1\","
+                        + "\"Source\":\"test1\"," // template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Name\":\"b\","
+                                + "\"Name\":\"b\"," // define a named block
                                 + "\"Source\":\"b\","
-                                + "\"Blocks\":["
+                                + "\"Blocks\":[" // define sub blocks - will be resetted
                                     + "{"
                                         + "\"Source\":\"b1\","
                                     + "},"
@@ -693,12 +726,12 @@ namespace Zbu.Blocks.Tests
             const string json2 =
                 "["
                     + "{"
-                        + "\"Source\":\"test2\","
+                        + "\"Source\":\"test2\"," // use another template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Name\":\"b\","
-                                + "\"IsReset\":true,"
-                                + "\"Blocks\":["
+                                + "\"Name\":\"b\"," // named => same block
+                                + "\"IsReset\":true," // but reset contents
+                                + "\"Blocks\":[" // so this defines the sub blocks
                                     + "{"
                                         + "\"Source\":\"b2\","
                                     + "},"
@@ -720,37 +753,43 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
+            // template is ok
             Assert.AreEqual("test2", s.Source);
+
+            // only one named block
             Assert.AreEqual(1, s.Blocks.Count);
+            Assert.AreEqual("b", s.Blocks[0].Name);
             Assert.AreEqual("b", s.Blocks[0].Source);
+
+            // only one sub-block, b2
             Assert.AreEqual(1, s.Blocks[0].Blocks.Count);
             Assert.AreEqual("b2", s.Blocks[0].Blocks[0].Source);
         }
 
         [Test]
-        public void TwoStructuresTwoLevelsWithNamedBlocksAndSubBlocksAndKill()
+        public void TwoContentsTwoStructuresWithNamedBlocksAndSubBlocksAndKill()
         {
-            // ensure reset works
+            // test block kill
 
             const string json1 = 
                 "["
                     + "{"
-                        + "\"Source\":\"test1\","
+                        + "\"Source\":\"test1\"," // template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Name\":\"ba\","
+                                + "\"Name\":\"ba\"," // define a named block
                                 + "\"Source\":\"ba\","
-                                + "\"Blocks\":["
+                                + "\"Blocks\":[" // define sub-blocks
                                     + "{"
                                         + "\"Source\":\"b1\","
                                     + "},"
                                 + "]"
                             + "},"
                             + "{"
-                                + "\"Name\":\"bb\","
-                                + "\"Blocks\":["
+                                + "\"Name\":\"bb\"," // define a named block
+                                + "\"Blocks\":[" // define sub-blocks
                                     + "{"
                                         + "\"Source\":\"b1\","
                                     + "},"
@@ -763,19 +802,19 @@ namespace Zbu.Blocks.Tests
             const string json2 = 
                 "["
                     + "{"
-                        + "\"Source\":\"test2\","
+                        + "\"Source\":\"test2\"," // use another template
                         + "\"Blocks\":["
                             + "{"
-                                + "\"Name\":\"ba\","
-                                + "\"Blocks\":["
+                                + "\"Name\":\"ba\"," // named => same block
+                                + "\"Blocks\":[" // add sub-blocks
                                     + "{"
                                         + "\"Source\":\"b2\","
                                     + "},"
                                 + "]"
                             + "},"
                             + "{"
-                                + "\"Name\":\"bb\","
-                                + "\"IsKill\":true,"
+                                + "\"Name\":\"bb\"," // named => same block
+                                + "\"IsKill\":true," // kill that block
                             + "},"
                         + "]"
                     + "},"
@@ -793,14 +832,76 @@ namespace Zbu.Blocks.Tests
             };
 
             var s = RenderingStructure.Compute(p, x => x.Structures);
-
             Assert.IsNotNull(s);
+
+            // template is ok
             Assert.AreEqual("test2", s.Source);
+
+            // only one named block, ba, because bb has been killed
             Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("ba", s.Blocks[0].Source);
+
+            // block contains the two sub-blocks in the right order
             Assert.AreEqual(2, s.Blocks[0].Blocks.Count);
             Assert.AreEqual("b1", s.Blocks[0].Blocks[0].Source);
             Assert.AreEqual("b2", s.Blocks[0].Blocks[1].Source);
+        }
+
+        [Test]
+        public void NamedBlockUnderAnonymousBlock()
+        {
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{" // anonymous
+                                + "\"Blocks\":["
+                                    + "{"
+                                        + "\"Name\":\"b\"," // with a named block
+                                        + "\"DataJson\":\"{\\\"value\\\":1}\"," // data
+                                    + "},"
+                                    + "{"
+                                        + "\"Source\":\"c\"," // and an anonymous
+                                    + "},"
+                                    + "{"
+                                        + "\"Name\":\"b\"," // repeat
+                                        + "\"DataJson\":\"{\\\"value\\\":2}\"," // override
+                                    + "},"
+                                + "]"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
+
+            var serializer = new JsonSerializer();
+
+            var p = new PublishedContent
+            {
+                Structures = serializer.Deserialize<StructureDataValue[]>(json),
+            };
+
+            var s = RenderingStructure.Compute(p, x => x.Structures);
+            Assert.IsNotNull(s);
+
+            // template is ok
+            Assert.AreEqual("test1", s.Source);
+
+            // one anonymous block
+            Assert.AreEqual(1, s.Blocks.Count);
+            var anon = s.Blocks[0];
+            Assert.IsNull(s.Blocks[0].Data);
+
+            // only two blocks 'cos one is named, in the right order
+            Assert.AreEqual(2, anon.Blocks.Count);
+            Assert.AreEqual("b", anon.Blocks[0].Source);
+            Assert.AreEqual("c", anon.Blocks[1].Source);
+
+            // and the named block can be accessed via index
+            Assert.IsNotNull(anon.Blocks["b"]);
+
+            // and has proper values
+            Assert.AreEqual(2, anon.Blocks["b"].Data["value"]);
         }
     }
 }

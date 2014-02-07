@@ -3,86 +3,73 @@
 
 TODO
 
-migrate all notes here
+- do we want partial structures on children (what is this)?
 
-blocks collections should be dictionaries
-RendereingBlockCollection
-with indexer, but not all have names
+- AJAX & MOBILE
+    we need a way to tell we want a special structure because we're AJAX
+	introduce a structure.context field and block.context field => only pick what's in the proper context
 
-properly handle casing of names, etc
-create a StructureException to properly report structure exceptions
+- Fragment
+    code the handling of the fragment in RenderingBlock
+	prob. need a block.fragmentType field to indicate the content type of the fragment
 
-Description
-Name (makes it unique)
-Type (gets from config)
-Source (overrides name)
+- What's in a block
+    find a way to indicate that a block's sub-blocks are columns
+	via a block.layout field?
 
-do we want named structures?
-do we want partial structures on children?
+	do we want to restrict the list of block name/source/whatever that can appear under a given block?
+	do we need block types to handle all this?
 
-missing DataJson for what's not a fragment
-missing handling AJAX & MOBILE management... different structures?
-missing Fragment / FragmentType management
-  "FragmentType": "BlockInsertImage"
 
-do we need a blockType notion to describe which blocks fit within witch blocks?
-  "type": "insert-image"
-these would be site-wide and defined in a config file
-also
-  Source -> Name (and used as a source)
-  Source still exists to override Name
-  Need a new Desc field
-  Type can reference an existing type
-
-structure:
-{
-	"Description": "...",
-	"Name": "...",
-	"Source": "...",
-	"IsReset": true|false,
-	"MinLevel": 000,
-	"MaxLevel": 000,
-	"Blocks": [ ... ]
-}
-
-block:
-{
-	"Description": "...",
-	"Name": "...",
-	"Type": "...",
-	"Source": "...",
-	"IsKill": true|false,
-	"IsReset": true|false,
-	"MinLevel": 000,
-	"MaxLevel": 000,
-	"DataJson": "...",
-	"FragmentJson": "...",
-	"Blocks": [ ... ]
-}
-
-{
-	"Name": "video",
-	"Type": "video", -> can define some values such as "Source"
-	"FragmentJson": "{ \"videoId\": 1234 }"
-}
-
+RENDERING
 
 
 @{
-	Layout = model.Structures.Source;
+	// explicit
+	var structure = Blocks.GetStructure(model.Content.StructureData)
+
+	// but actually Model should have a model.Structure property
 }
-@Blocks.Render(model.Structures)
+@{
+	Layout = Model.Structure.Source;
+}
 
-<div>
-	@Blocks.Render(model.Structure.Blocks["header"]);
-</div>
+STRUCTURE TEMPLATE:
 
-<div>
-	@foreach (var block in model.Structure.Blocks)
-	{
-		@Blocks.Render(block)
+	-- that template is picked using the structure.source field
+
+	@{
+		Layout = "master.cshtml";
 	}
-</div>
 
-<img src="@model.Structure.Fragment.Image.Urls.CropResized(100, 100)" />
-"FragmentJson": "{ \"image\": 1234, \"legend\": \"a nice image\" }"
+	<div>
+		@Blocks.Render(Model.Structure.Blocks["header"]);
+	</div>
+	<div>
+		@Blocks.Render(Model.Structure.Blocks["footer"]);
+	</div>
+
+BLOCK TEMPLATE:
+
+	<div>
+		<!-- render foo here -->
+		@Blocks.Render(Model.Block.Blocks["foo"]);
+	</div>
+
+BLOCK TEMPLATE:
+
+	<div>
+		<!-- iterate through all inner blocks and render them -->
+		@foreach (var block in Model.Block.Blocks)
+		{
+			// this will use block.source to load the proper view
+			// and will pass the block object as Model.Structure
+			@Blocks.Render(block)
+		}
+	</div>
+
+BLOCK TEMPLATE:
+
+	<!-- display the selected image -->
+	<img src="@Model.Block.Fragment.Image.Urls.CropResized(100, 100)" />
+

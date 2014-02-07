@@ -34,12 +34,14 @@ namespace Zbu.Blocks
         /// <summary>
         /// Gets or sets the name of the structure.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get { return _name; } set { _name = (value ?? string.Empty).ToLowerInvariant(); } }
+        private string _name;
 
         /// <summary>
         /// Gets or sets the source of the structure.
         /// </summary>
-        public string Source { get; set; }
+        public string Source { get { return _source; } set { _source = (value ?? string.Empty).ToLowerInvariant(); } }
+        private string _source;
 
         /// <summary>
         /// Gets or sets a value indicating whether the structure resets the chain,

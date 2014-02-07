@@ -21,8 +21,8 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual(
                 "{"
                     + "\"Description\":\"test structure\","
-                    + "\"Name\":\"testName\","
-                    + "\"Source\":\"testSource\","
+                    + "\"Name\":\"testname\","
+                    + "\"Source\":\"testsource\","
                     + "\"IsReset\":false,"
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
@@ -49,9 +49,9 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual(
                 "{"
                     + "\"Description\":\"test block\","
-                    + "\"Name\":\"testName\","
-                    + "\"Type\":\"testType\","
-                    + "\"Source\":\"testSource\","
+                    + "\"Name\":\"testname\","
+                    + "\"Type\":\"testtype\","
+                    + "\"Source\":\"testsource\","
                     + "\"IsKill\":false,"
                     + "\"IsReset\":true,"
                     + "\"MinLevel\":0,"
@@ -80,8 +80,8 @@ namespace Zbu.Blocks.Tests
             var s = serializer.Deserialize<StructureDataValue>(json);
 
             Assert.AreEqual("test structure", s.Description);
-            Assert.AreEqual("testName", s.Name);
-            Assert.AreEqual("testSource", s.Source);
+            Assert.AreEqual("testname", s.Name);
+            Assert.AreEqual("testsource", s.Source);
             Assert.AreEqual(0, s.Blocks.Length);
         }
 
@@ -107,9 +107,9 @@ namespace Zbu.Blocks.Tests
             var b = serializer.Deserialize<BlockDataValue>(json);
 
             Assert.AreEqual("test block", b.Description);
-            Assert.AreEqual("testName", b.Name);
-            Assert.AreEqual("testType", b.Type);
-            Assert.AreEqual("testSource", b.Source);
+            Assert.AreEqual("testname", b.Name);
+            Assert.AreEqual("testtype", b.Type);
+            Assert.AreEqual("testsource", b.Source);
             Assert.IsFalse(b.IsKill);
             Assert.IsTrue(b.IsReset);
             Assert.IsTrue(b.IsNamed);
@@ -128,7 +128,7 @@ namespace Zbu.Blocks.Tests
             var s = serializer.Deserialize<StructureDataValue>(json);
 
             Assert.AreEqual(string.Empty, s.Name);
-            Assert.AreEqual("testSource", s.Source);
+            Assert.AreEqual("testsource", s.Source);
             Assert.AreEqual(0, s.Blocks.Length);
         }
     }

@@ -39,7 +39,8 @@ namespace Zbu.Blocks
         /// </summary>
         /// <remarks>Naming a block makes it unique. Name can contain slashes. Only
         /// top-level blocks, or named blocks, can contain named blocks.</remarks>
-        public string Name { get; set; }
+        public string Name { get { return _name; } set { _name = (value ?? string.Empty).ToLowerInvariant(); } }
+        private string _name;
 
         /// <summary>
         /// Gets a value indicating whether the block is named.
@@ -47,21 +48,23 @@ namespace Zbu.Blocks
         [JsonIgnore]
         public bool IsNamed
         {
-            get { return !string.IsNullOrWhiteSpace(Name); }
+            get { return !string.IsNullOrWhiteSpace(_name); }
         }
 
         /// <summary>
         /// Gets or sets the type of the block.
         /// </summary>
         /// <remarks>A block with a type will initialize with values from config.</remarks>
-        public string Type { get; set; }
+        public string Type { get { return _type; } set { _type = (value ?? string.Empty).ToLowerInvariant(); } }
+        private string _type;
 
         /// <summary>
         /// Gets or sets the source of the block.
         /// </summary>
         /// <remarks>The source is the actual view to render. Can contain slashes. By
         /// default it derives from the name if there's a name.</remarks>
-        public string Source { get; set; }
+        public string Source { get { return _source; } set { _source = (value ?? string.Empty).ToLowerInvariant(); } }
+        private string _source;
 
         /// <summary>
         /// Gets or sets a value indicating whether the block kills an existing block.

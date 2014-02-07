@@ -6,6 +6,9 @@ namespace Zbu.Blocks
     /// <summary>
     /// Represents a block to be rendered.
     /// </summary>
+    /// <remarks>Name makes a block named ie unique, Type initialized all properties from a predefined
+    /// type, Source overrides name if needed. Such as when using the same source for two types of blocks
+    /// which would be differenciated by their name.</remarks>
     public class RenderingBlock
     {
         /// <summary>
@@ -27,10 +30,12 @@ namespace Zbu.Blocks
             Fragment = CreateFragmentFromJson(fragmentJson);
         }
 
-        // fixme
+        // fixme - move to ctor
         Dictionary<string, object> CreateDataFromJson(string json)
         {
-            return new Dictionary<string, object>();
+            // fixme - creating far too many serializers!
+            var serializer = new JsonSerializer();
+            return serializer.Deserialize<Dictionary<string, object>>(json);
         }
 
         // fixme

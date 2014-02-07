@@ -35,9 +35,8 @@ namespace Zbu.Blocks
 
         public static RenderingStructure Compute(PublishedContent content, Func<PublishedContent, IEnumerable<StructureDataValue>> propertyAccessor)
         {
-            // get the structures that apply to the content
-            // for each structure, remember its relative level
-            //   so that we can use it to filter the blocks
+            // get the structure data values that apply to the content
+            // for each structure, remember its relative level so that we can use it to filter the blocks
             // sort order is bottom-top
             var structureDataValues = new List<WithLevel<StructureDataValue>>();
             var level = 0;
@@ -67,44 +66,53 @@ namespace Zbu.Blocks
                 content = content == null ? null : content.Parent;
             }
 
-            // gets the top-level blocks that apply to the content
-            // for each block, remember its relative level
-            //   so that we can use it to filter the sub-blocks
+            // gets the structure-level block data values that apply to the content
+            // for each block, remember its relative level so that we can use it to filter the sub-blocks
             // sort order is bottom-top
             var blockDataValues = structureDataValues // bottom-top
                 .SelectMany(s => s
                     .Item.Blocks // top-bottom
                         .Where(x => x.MinLevel <= s.Level && x.MaxLevel >= s.Level)
                         .Reverse() // bottom-top
-                        .Select(x => new WithLevel<BlockDataValue>(x, s.Level)))
-                .ToArray();
+                        .Select(x => new WithLevel<BlockDataValue>(x, s.Level)));
 
             // create the temporary structure
             var tempStructure = new TempStructure
             {
+                // walk up the structures looking for a proper source else fall back to "default"
                 Source = structureDataValues
                     .Select(x => string.IsNullOrEmpty(x.Item.Source) ? x.Item.Name : x.Item.Source) // pick .Source else fallback to .Name
                     .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) // pick the first that's not empty
                          ?? "default", // if everything fails then fall back to "default"
 
-                Blocks = GetTempFromData(blockDataValues).Reverse().ToArray()
+                // recursively get the blocks
+                Blocks = GetTempFromData(blockDataValues) // bottom-up -> top-bottom
             };
 
             return GetRenderingFromTemp(tempStructure);
         }
 
+        // input is a collection of block data values
+        //   defined at structure level or under a named blocks chain
+        // output is the resulting collection of temp blocks
+        //
+        // named blocks are collapsed into one temp block each
+        // anonymous blocks each match to one temp block
+        //
+        // blockDataValues is ordered bottom-top
+        // returns blocks ordered top-bottom
         private static IEnumerable<TempBlock> GetTempFromData(IEnumerable<WithLevel<BlockDataValue>> blockDataValues)
         {
-            // the array is bottom-top
             var blockDataValuesArray = blockDataValues.ToArray(); // iterate only once
 
             // find named blocks
-            // because we're iterating bottom-top, this will get the top-most of each name
+            // because we're iterating bottom-top, this will get the top-most block for each name
             var namedBlockDataValues = new Dictionary<string, BlockDataValue>();
             foreach (var b in blockDataValuesArray.Where(x => x.Item.IsNamed).Select(x => x.Item))
                 namedBlockDataValues[b.Name] = b;
 
-            // create the temporary named blocks from the top-most data value
+            // create the temporary named blocks from the top-most block data value
+            // whether bottom named blocks can change any of these settings is an option
             var namedTempBlocks = namedBlockDataValues.Values
                 .ToDictionary(
                     blockDataValue => blockDataValue.Name,
@@ -124,15 +132,22 @@ namespace Zbu.Blocks
                 var blockLevel = block.Level;
 
                 // check if it matches a named block
-                TempBlock namedTempBlock2;
-                if (namedTempBlocks.TryGetValue(blockDataValue.Name, out namedTempBlock2))
+                TempBlock namedTempBlock;
+                if (namedTempBlocks.TryGetValue(blockDataValue.Name, out namedTempBlock))
                 {
                     // named block
+                    // don't create another temp block but collapse into the existing one
 
                     var isTopMost = namedBlockDataValues.ContainsValue(blockDataValue);
 
+                    // only the top-most named block can set these values?
                     if (!isTopMost)
                     {
+                        // what shall we do?
+                        // throw? log a warning and ignore them?
+                        // for the time being, we allow them to be overriden
+
+                        /*
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Source))
                             throw new Exception("Only the top-most named block can define a source.");
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
@@ -141,126 +156,75 @@ namespace Zbu.Blocks
                             throw new Exception("Only the top-most named block can define some data.");
                         if (!string.IsNullOrWhiteSpace(blockDataValue.FragmentJson))
                             throw new Exception("Only the top-most named block can define a fragment.");
+                        */
+
+                        if (!string.IsNullOrWhiteSpace(blockDataValue.Source))
+                            namedTempBlock.Source = blockDataValue.Source;
+                        //if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
+                        //    namedTempBlock.Type = blockDataValue.Type;
+                        if (!string.IsNullOrWhiteSpace(blockDataValue.DataJson))
+                            namedTempBlock.DataJson = blockDataValue.DataJson;
+                        if (!string.IsNullOrWhiteSpace(blockDataValue.FragmentJson))
+                            namedTempBlock.FragmentJson = blockDataValue.FragmentJson;
                     }
 
-                    // add our own blocks here
-                    if (!namedTempBlock2.Locked)
-                        namedTempBlock2.BlockDatas.AddRange(blockDataValue.Blocks.Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
+                    // add our own blocks to the existing temp block
+                    if (!namedTempBlock.Locked)
+                        namedTempBlock.BlockDataValues.AddRange(blockDataValue.Blocks.Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
 
                     // if reset, lock temp block blocks collection
                     if (blockDataValue.IsReset)
-                        namedTempBlock2.Locked = true;
+                        namedTempBlock.Locked = true;
 
                     // if kill, kill temp block so it's not inserted
                     if (blockDataValue.IsKill)
-                        namedTempBlock2.Killed = namedTempBlock2.Locked = true;
+                        namedTempBlock.Killed = namedTempBlock.Locked = true;
 
                     // insert temp block at the position of the top-most occurence
-                    if (isTopMost && !namedTempBlock2.Killed)
-                        tempBlocks.Add(namedTempBlock2);
+                    if (isTopMost && !namedTempBlock.Killed)
+                        tempBlocks.Add(namedTempBlock);
                 }
                 else
                 {
                     // not a named block
-                    
+
                     // just add a new temp block
                     tempBlocks.Add(new TempBlock
                     {
                         Name = blockDataValue.Name,
-                        Source = blockDataValue.Source,
+                        Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
                         DataJson = blockDataValue.DataJson,
                         FragmentJson = blockDataValue.FragmentJson,
-                        Blocks = GetTempFromData(block.Item.Blocks, blockLevel) // recurse
+
+                        // there's nothing to merge so all blocks are defined at the same level
+                        // block.Item.Blocks is top-bottom, must reverse
+                        Blocks = GetTempFromData(block.Item.Blocks.Reverse().Select(b => new WithLevel<BlockDataValue>(b, blockLevel)))
                     });
                 }
-
-                // fixme must cleanup
-                //// check if matches a named block
-                //BlockDataValue namedBlockDataValue;
-                //if (namedBlockDataValues.TryGetValue(blockDataValue.Name, out namedBlockDataValue))
-                //{
-                //    // check if the corresponding temp block already exists, else create it
-                //    TempBlock namedTempBlock;
-                //    if (!namedTempBlocks.TryGetValue(blockDataValue.Name, out namedTempBlock))
-                //    {
-                //        namedTempBlock = new TempBlock
-                //        {
-                //            Name = namedBlockDataValue.Name,
-                //            Source = namedBlockDataValue.Source,
-                //            DataJson = namedBlockDataValue.DataJson,
-                //            FragmentJson = namedBlockDataValue.FragmentJson
-                //        };
-                //        namedTempBlocks.Add(blockDataValue.Name, namedTempBlock);
-                //    }
-
-                //    // add our own blocks here
-                //    if (!namedTempBlock.Locked)
-                //        namedTempBlock.BlockDatas.AddRange(blockDataValue.Blocks.Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
-
-                //    // if reset, lock temp block blocks collection
-                //    if (blockDataValue.IsReset)
-                //        namedTempBlock.Locked = true;
-
-                //    // if kill, kill temp block so it's not inserted
-                //    if (blockDataValue.IsKill)
-                //        namedTempBlock.Killed = namedTempBlock.Locked = true;
-
-                //    // insert temp block at the position of the top-most occurence
-                //    if (namedBlockDataValue == blockDataValue && !namedTempBlock.Killed)
-                //        tempBlocks.Add(namedTempBlock);
-                //}
-                //else
-                //{
-                //    // not a named block, just add a new temp block
-                //    tempBlocks.Add(new TempBlock
-                //    {
-                //        Name = blockDataValue.Name,
-                //        Source = blockDataValue.Source,
-                //        DataJson = blockDataValue.DataJson,
-                //        FragmentJson = blockDataValue.FragmentJson,
-                //        Blocks = GetTempFromData(block.Item.Blocks, blockLevel) // recurse
-                //    });
-                //}
             }
 
-            // process named blocks inner blocks
-            foreach (var blockTemp in namedTempBlocks.Values)
-                blockTemp.Blocks = GetTempFromData(blockTemp.BlockDatas).Reverse().ToArray(); // recurse
+            // process named blocks source & inner blocks
+            foreach (var tempBlock in namedTempBlocks.Values)
+            {
+                tempBlock.Source = string.IsNullOrWhiteSpace(tempBlock.Source) ? tempBlock.Name : tempBlock.Source;
 
+                // tempBlock is a named block so tempBlock.BlockDatas is already bottom-top ordered
+                tempBlock.Blocks = GetTempFromData(tempBlock.BlockDataValues); // recurse
+            }
+
+            tempBlocks.Reverse(); // return top-bottom
             return tempBlocks;
-        }
-
-        private static TempBlock[] GetTempFromData(IEnumerable<BlockDataValue> blockDataValues, int level)
-        {
-            // this is not a named block so its inner blocks do not merge
-            // just convert the local blocks - recursively - taking care of levels
-            return blockDataValues
-                .Where(x => x.MinLevel <= level && x.MaxLevel >= level)
-                .Select(blockDataValue =>
-                {
-                    if (blockDataValue.IsNamed)
-                        throw new Exception("Cannot have named blocks under an anonymous block.");
-
-                    return new TempBlock
-                    {
-                        Name = blockDataValue.Name,
-                        Source = blockDataValue.Source,
-                        DataJson = blockDataValue.DataJson,
-                        FragmentJson = blockDataValue.FragmentJson,
-                        Blocks = GetTempFromData(blockDataValue.Blocks, level)
-                    };
-                }).ToArray();
         }
 
         private static RenderingStructure GetRenderingFromTemp(TempStructure s)
         {
-            var renderingBlocks = s.Blocks.Select(GetRenderingFromTemp).ToArray();
+            var renderingBlocks = s.Blocks.Select(GetRenderingFromTemp); // recurse
             return new RenderingStructure(s.Source, renderingBlocks);
         }
 
         private static RenderingBlock GetRenderingFromTemp(TempBlock b)
         {
-            var renderingBlocks = b.Blocks.Select(GetRenderingFromTemp).ToArray(); // recurse
+            var renderingBlocks = b.Blocks.Select(GetRenderingFromTemp); // recurse
             return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.DataJson, b.FragmentJson);
         }
         

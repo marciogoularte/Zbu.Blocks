@@ -7,12 +7,15 @@ namespace Zbu.Blocks
     /// </summary>
     class TempBlock : TempStructure
     {
+        public string Name { get; set; }
+
         public bool Locked { get; set; }
         public bool Killed { get; set; }
 
         public string DataJson { get; set; }
         public string FragmentJson { get; set; }
 
-        public readonly List<WithLevel<BlockDataValue>> BlockDatas = new List<WithLevel<BlockDataValue>>();
+        // we're going to add to it
+        public readonly List<WithLevel<BlockDataValue>> BlockDataValues = new List<WithLevel<BlockDataValue>>();
     }
 }
