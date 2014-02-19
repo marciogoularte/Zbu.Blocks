@@ -27,7 +27,7 @@ namespace Zbu.Blocks.Tests
                 Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test", s.Source);
@@ -57,7 +57,7 @@ namespace Zbu.Blocks.Tests
                 Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test2", s.Source);
@@ -88,7 +88,7 @@ namespace Zbu.Blocks.Tests
                 Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test1", s.Source);
@@ -115,7 +115,7 @@ namespace Zbu.Blocks.Tests
                 Parent = new PublishedContent()
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test", s.Source);
@@ -144,7 +144,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test", s.Source);
@@ -181,7 +181,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test2", s.Source);
@@ -221,7 +221,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test1", s.Source);
@@ -255,7 +255,7 @@ namespace Zbu.Blocks.Tests
                 Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test", s.Source);
@@ -297,7 +297,7 @@ namespace Zbu.Blocks.Tests
                 Structures = serializer.Deserialize<StructureDataValue[]>(json)
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test2", s.Source);
@@ -347,7 +347,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test2", s.Source);
@@ -397,7 +397,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             Assert.AreEqual("test2", s.Source);
@@ -449,7 +449,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
             Assert.AreEqual("test2", s.Source);
 
@@ -499,7 +499,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is ok
@@ -554,7 +554,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is default because top is ignored
@@ -621,7 +621,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is ok
@@ -684,7 +684,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is ok
@@ -752,7 +752,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is ok
@@ -831,7 +831,7 @@ namespace Zbu.Blocks.Tests
                 }
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is ok
@@ -881,7 +881,7 @@ namespace Zbu.Blocks.Tests
                 Structures = serializer.Deserialize<StructureDataValue[]>(json),
             };
 
-            var s = RenderingStructure.Compute(p, x => x.Structures);
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
             Assert.IsNotNull(s);
 
             // template is ok

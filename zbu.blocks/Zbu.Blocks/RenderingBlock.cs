@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using Umbraco.Core.Models;
 
 namespace Zbu.Blocks
 {
@@ -39,7 +39,7 @@ namespace Zbu.Blocks
         }
 
         // fixme
-        PublishedContentFragment CreateFragmentFromJson(string json)
+        static IPublishedContent CreateFragmentFromJson(string json)
         {
             return null;
         }
@@ -68,6 +68,6 @@ namespace Zbu.Blocks
         /// <summary>
         /// Gets or sets the block content fragment.
         /// </summary>
-        public PublishedContentFragment Fragment { get; private set; }
+        public IPublishedContent Fragment { get; private set; }
     }
 }

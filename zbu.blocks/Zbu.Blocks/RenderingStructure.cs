@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Umbraco.Core.Models;
 
 namespace Zbu.Blocks
 {
@@ -33,7 +34,7 @@ namespace Zbu.Blocks
 
         #region Compute
 
-        public static RenderingStructure Compute(PublishedContent content, Func<PublishedContent, IEnumerable<StructureDataValue>> propertyAccessor)
+        public static RenderingStructure Compute(IPublishedContent content, Func<IPublishedContent, IEnumerable<StructureDataValue>> propertyAccessor)
         {
             // get the structure data values that apply to the content
             // for each structure, remember its relative level so that we can use it to filter the blocks
