@@ -26,8 +26,8 @@ namespace Zbu.Blocks
             Name = name;
             Source = source;
             Blocks = new RenderingBlockCollection(blocks);
-            Data = CreateDataFromJson(dataJson);
-            Fragment = CreateFragmentFromJson(fragmentJson);
+            Data = dataJson == null ? null : CreateDataFromJson(dataJson);
+            Fragment = fragmentJson == null ? null : CreateFragmentFromJson(fragmentJson);
         }
 
         // fixme - move to ctor

@@ -1,17 +1,28 @@
 ﻿Install-Package Newtonsoft.Json -Version 4.5.11
 => use the same version Umbraco 6.2 uses
 
+
+STATUS
+- rendering is working
+- still issue with the controller, will kick in all situations, would want to filter (factory?)
+- must cleanup the controller, implement fragments and block types
+
 TODO
 
-- do we want partial structures on children (what is this)?
-
 - AJAX & MOBILE
-    we need a way to tell we want a special structure because we're AJAX
-	introduce a structure.context field and block.context field => only pick what's in the proper context
+	structures support contexts
+	controller should set contexts? ie for AJAX? that should be a local thing really...
+	  => controller should be overridable
 
 - Fragment
     code the handling of the fragment in RenderingBlock
 	prob. need a block.fragmentType field to indicate the content type of the fragment
+
+- Block types
+    via a config file
+	implement
+
+- do we want partial structures on children (what is this)?
 
 - What's in a block
     find a way to indicate that a block's sub-blocks are columns
@@ -23,53 +34,27 @@ TODO
 
 RENDERING
 
-
+@inherits Umbraco.Web.Mvc.UmbracoViewPage<BlockModel>
+@using Zbu.Blocks
 @{
-	// explicit
-	var structure = Blocks.GetStructure(model.Content.StructureData)
-
-	// but actually Model should have a model.Structure property
+    Layout = null;
 }
-@{
-	Layout = Model.Structure.Source;
+<div style="border:1px solid blue;padding:4px;">
+<div>StructureTest.cshtml</div>
+<div>@Model.Content.Name</div>
+@foreach (var b in Model.Block.Blocks)
+{
+	 @Html.Block(b);
 }
+</div>
 
-STRUCTURE TEMPLATE:
+@inherits Umbraco.Web.Mvc.UmbracoViewPage<BlockModel>
+@using Zbu.Blocks
+<div style="border:1px solid green;padding:4px;">
+<div>BlockTest.cshtml</div>
+<div>@Model.Content.Name</div>
+<div>@Model.Block.Data["Number"]</div>
+</div>
 
-	-- that template is picked using the structure.source field
-
-	@{
-		Layout = "master.cshtml";
-	}
-
-	<div>
-		@Blocks.Render(Model.Structure.Blocks["header"]);
-	</div>
-	<div>
-		@Blocks.Render(Model.Structure.Blocks["footer"]);
-	</div>
-
-BLOCK TEMPLATE:
-
-	<div>
-		<!-- render foo here -->
-		@Blocks.Render(Model.Block.Blocks["foo"]);
-	</div>
-
-BLOCK TEMPLATE:
-
-	<div>
-		<!-- iterate through all inner blocks and render them -->
-		@foreach (var block in Model.Block.Blocks)
-		{
-			// this will use block.source to load the proper view
-			// and will pass the block object as Model.Structure
-			@Blocks.Render(block)
-		}
-	</div>
-
-BLOCK TEMPLATE:
-
-	<!-- display the selected image -->
-	<img src="@Model.Block.Fragment.Image.Urls.CropResized(100, 100)" />
-
+<div>@Html.Block(Model.Block.Blocks["foo"])</div>
+<img src="@Model.Block.Fragment.Image.Urls.CropResized(100, 100)" />

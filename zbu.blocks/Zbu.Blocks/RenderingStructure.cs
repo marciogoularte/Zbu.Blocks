@@ -8,7 +8,7 @@ namespace Zbu.Blocks
     /// <summary>
     /// Represents a structure to be rendered.
     /// </summary>
-    public class RenderingStructure
+    public class RenderingStructure : RenderingBlock
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderingStructure"/> class with a source and a collection of blocks.
@@ -16,26 +16,34 @@ namespace Zbu.Blocks
         /// <param name="source">The structure source.</param>
         /// <param name="blocks">The structure blocks.</param>
         public RenderingStructure(string source, IEnumerable<RenderingBlock> blocks)
+            : base(null, source, blocks, null, null)
         {
-            Source = source;
-            Blocks = new RenderingBlockCollection(blocks);
+            //Source = source;
+            //Blocks = new RenderingBlockCollection(blocks);
         }
 
         /// <summary>
         /// Gets or sets the source of the structure.
         /// </summary>
         /// <remarks>The source determines the view that should be used to render the structure.</remarks>
-        public string Source { get; private set; }
+        //public string Source { get; private set; }
 
         /// <summary>
         /// Gets or sets the blocks collection of the structure.
         /// </summary>
-        public RenderingBlockCollection Blocks { get; private set; }
+        //public RenderingBlockCollection Blocks { get; private set; }
 
         #region Compute
 
         public static RenderingStructure Compute(IPublishedContent content, Func<IPublishedContent, IEnumerable<StructureDataValue>> propertyAccessor)
         {
+            return Compute(null, content, propertyAccessor);
+        }
+
+        public static RenderingStructure Compute(string context, IPublishedContent content, Func<IPublishedContent, IEnumerable<StructureDataValue>> propertyAccessor)
+        {
+            var checkContext = string.IsNullOrWhiteSpace(context) ? null : context.ToLowerInvariant();
+
             // get the structure data values that apply to the content
             // for each structure, remember its relative level so that we can use it to filter the blocks
             // sort order is bottom-top
@@ -55,6 +63,8 @@ namespace Zbu.Blocks
                 var l = level;
                 foreach (var s in contentStructureDataValues
                     .Where(x => x.MinLevel <= l && x.MaxLevel >= l)
+                    .Where(x => (checkContext == null && x.Contexts.Length == 0) 
+                        || (checkContext != null && x.Contexts.Contains(checkContext)))
                     .Reverse())
                 {
                     structureDataValues.Add(new WithLevel<StructureDataValue>(s, l));

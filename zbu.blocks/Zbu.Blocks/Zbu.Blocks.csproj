@@ -43,22 +43,32 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="umbraco">
+      <HintPath>..\..\..\..\src\build\_BuildOutput\WebApp\bin\umbraco.dll</HintPath>
+    </Reference>
     <Reference Include="Umbraco.Core">
       <HintPath>..\..\..\..\src\build\_BuildOutput\WebApp\bin\Umbraco.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockDataValue.cs" />
+    <Compile Include="Mvc\HtmlHelperExtensions.cs" />
+    <Compile Include="Mvc\BlocksController.cs" />
+    <Compile Include="Mvc\BlockModel.cs" />
+    <Compile Include="Mvc\BlockModelOfTContent.cs" />
     <Compile Include="DataType\StructureData.cs" />
     <Compile Include="DataType\StructuresConverter.cs" />
     <Compile Include="DataType\StructuresDataType.cs" />
     <Compile Include="DataType\StructuresEditor.cs" />
     <Compile Include="DataType\StructuresPrevalueEditor.cs" />
+    <Compile Include="Temp.cs" />
     <Compile Include="TempBlock.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
