@@ -33,6 +33,19 @@ namespace Zbu.Blocks
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="BlockDataValue"/> class with a type.
+        /// </summary>
+        [JsonConstructor] // JSON uses that one
+        public BlockDataValue(string type)
+            : this()
+        {
+            // first the default ctor will initialize with default values
+            // then we set the type
+            Type = type;
+            if (Type == "foo") DataJson = "hophop";
+        }
+
+        /// <summary>
         /// Gets or sets the description of the block.
         /// </summary>
         /// <remarks>Description is free text.</remarks>

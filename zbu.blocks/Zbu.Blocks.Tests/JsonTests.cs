@@ -165,6 +165,44 @@ namespace Zbu.Blocks.Tests
         }
 
         [Test]
+        public void DeserializeBlockDataWithType()
+        {
+            var json =
+                "{"
+                    + "\"Description\":\"test block\","
+                    + "\"Name\":\"testName\","
+                    + "\"Type\":\"foo\","
+                    + "\"Source\":\"testSource\","
+                    + "\"IsKill\":false,"
+                    + "\"IsReset\":true,"
+                    + "\"MinLevel\":0,"
+                    + "\"MaxLevel\":" + int.MaxValue + ","
+                    //+ "\"DataJson\":\"\","
+                    //+ "\"DataJson\":null,"
+                    + "\"FragmentJson\":\"\","
+                    + "\"Blocks\":[]"
+                + "}";
+
+            // this works as long as the json does NOT contain DataJson
+            // so there's a difference between it being there with a value
+            // that can be "" or null, and it NOT being there at all
+            // and we should manage that at interface level? how?
+
+            var serializer = new JsonSerializer();
+            var b = serializer.Deserialize<BlockDataValue>(json);
+
+            Assert.AreEqual("test block", b.Description);
+            Assert.AreEqual("testname", b.Name);
+            Assert.AreEqual("foo", b.Type);
+            Assert.AreEqual("testsource", b.Source);
+            Assert.IsFalse(b.IsKill);
+            Assert.IsTrue(b.IsReset);
+            Assert.IsTrue(b.IsNamed);
+            Assert.AreEqual("hophop", b.DataJson);
+            Assert.AreEqual(0, b.Blocks.Length);
+        }
+
+        [Test]
         public void DeserializePartialStructureData()
         {
             const string json = "{"
