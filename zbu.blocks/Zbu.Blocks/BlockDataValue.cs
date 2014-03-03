@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -41,8 +42,24 @@ namespace Zbu.Blocks
         {
             // first the default ctor will initialize with default values
             // then we set the type
-            Type = type;
-            if (Type == "foo") DataJson = "hophop";
+            Type = string.IsNullOrWhiteSpace(type) ? null : type.ToLowerInvariant();
+            if (Type == null) return;
+            
+            // fixme - should we throw, log, something?
+            BlockDataValue typeBlock;
+            if (!Types.TryGetValue(Type, out typeBlock)) return;
+
+            // description is a local thing
+            // name is a local thing
+            // type is already set
+            Source = typeBlock.Source;
+            IsKill = typeBlock.IsKill;
+            IsReset = typeBlock.IsReset;
+            MinLevel = typeBlock.MinLevel;
+            MaxLevel = typeBlock.MaxLevel;
+            Blocks = typeBlock.Blocks;
+            Data = typeBlock.Data;
+            FragmentData = typeBlock.FragmentData;
         }
 
         /// <summary>
@@ -147,6 +164,19 @@ namespace Zbu.Blocks
 
             foreach (var block in Blocks)
                 block.EnsureFragments(preview);
+        }
+
+        private static readonly IDictionary<string, BlockDataValue> Types 
+            = new Dictionary<string, BlockDataValue>();
+
+        public static void AddType(string typeName, BlockDataValue typeBlock)
+        {
+            Types.Add(typeName.ToLowerInvariant(), typeBlock);
+        }
+
+        public static void RemoveType(string typeName)
+        {
+            Types.Remove(typeName.ToLowerInvariant());
         }
     }
 }

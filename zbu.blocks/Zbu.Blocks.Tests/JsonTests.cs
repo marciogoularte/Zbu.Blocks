@@ -179,10 +179,17 @@ namespace Zbu.Blocks.Tests
                     + "\"MaxLevel\":" + int.MaxValue + ","
                     //+ "\"DataJson\":\"\","
                     //+ "\"DataJson\":null,"
-                    + "\"FragmentJson\":\"\","
+                    + "\"FragmentType\":null,"
+                    + "\"FragmentData\":null,"
                     + "\"Blocks\":[]"
                 + "}";
 
+            BlockDataValue.AddType("foo", new BlockDataValue
+            {
+                Data = new Dictionary<string, object>{{"doo", 7788}}
+            });
+
+            // fixme
             // this works as long as the json does NOT contain DataJson
             // so there's a difference between it being there with a value
             // that can be "" or null, and it NOT being there at all
@@ -198,7 +205,10 @@ namespace Zbu.Blocks.Tests
             Assert.IsFalse(b.IsKill);
             Assert.IsTrue(b.IsReset);
             Assert.IsTrue(b.IsNamed);
-            Assert.AreEqual("hophop", b.DataJson);
+            Assert.IsNotNull(b.Data);
+            Assert.AreEqual(1, b.Data.Count);
+            Assert.IsTrue(b.Data.ContainsKey("doo"));
+            Assert.AreEqual(7788, b.Data["doo"]);
             Assert.AreEqual(0, b.Blocks.Length);
         }
 

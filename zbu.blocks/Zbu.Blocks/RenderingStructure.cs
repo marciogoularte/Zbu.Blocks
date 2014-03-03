@@ -174,8 +174,12 @@ namespace Zbu.Blocks
                         // fixme - makes no sense to override that one - just ignore it
                         //if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
                         //    namedTempBlock.Type = blockDataValue.Type;
+
+                        // fixme - should probably merge/override instead of replacing
                         if (blockDataValue.Data != null)
                             namedTempBlock.Data = blockDataValue.Data;
+
+                        // fixme - that should be illegal
                         if (blockDataValue.Fragment != null)
                             namedTempBlock.Fragment = blockDataValue.Fragment;
                     }
