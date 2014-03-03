@@ -18,24 +18,17 @@ namespace Zbu.Blocks
         /// <param name="name">The name of the block.</param>
         /// <param name="source">The block source.</param>
         /// <param name="blocks">The block inner blocks.</param>
-        /// <param name="dataJson">The block data json.</param>
+        /// <param name="data">The block data.</param>
         /// <param name="fragmentJson">The block content fragment json.</param>
+        /// <remarks>The block data can be null.</remarks>
         public RenderingBlock(string name, string source, IEnumerable<RenderingBlock> blocks, 
-            string dataJson, string fragmentJson)
+            IDictionary<string, object> data, string fragmentJson)
         {
             Name = name;
             Source = source;
             Blocks = new RenderingBlockCollection(blocks);
-            Data = dataJson == null ? null : CreateDataFromJson(dataJson);
+            Data = data;
             Fragment = fragmentJson == null ? null : CreateFragmentFromJson(fragmentJson);
-        }
-
-        // fixme - move to ctor
-        Dictionary<string, object> CreateDataFromJson(string json)
-        {
-            // fixme - creating far too many serializers!
-            var serializer = new JsonSerializer();
-            return serializer.Deserialize<Dictionary<string, object>>(json);
         }
 
         // fixme

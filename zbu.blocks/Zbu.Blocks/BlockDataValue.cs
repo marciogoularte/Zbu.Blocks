@@ -1,4 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using Umbraco.Core.Models;
+using Umbraco.Web;
 
 namespace Zbu.Blocks
 {
@@ -24,7 +28,7 @@ namespace Zbu.Blocks
             MinLevel = 0;
             MaxLevel = int.MaxValue;
             Blocks = NoBlocks;
-            DataJson = string.Empty;
+            Data = null;
             FragmentJson = string.Empty;
         }
 
@@ -92,10 +96,9 @@ namespace Zbu.Blocks
         // should we handle Index, Before, After to sort blocks?!
 
         /// <summary>
-        /// Gets or sets the block data JSON.
+        /// Gets or sets the block data.
         /// </summary>
-        /// <remarks>Deserializes into a dictionary.</remarks>
-        public string DataJson { get; set; }
+        public IDictionary<string, object> Data { get; set; }
 
         /// <summary>
         /// Gets or sets the block content fragment JSON.

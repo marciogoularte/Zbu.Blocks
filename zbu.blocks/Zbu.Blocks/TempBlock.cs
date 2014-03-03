@@ -12,7 +12,7 @@ namespace Zbu.Blocks
         public bool Locked { get; set; }
         public bool Killed { get; set; }
 
-        public string DataJson { get; set; }
+        public IDictionary<string, object> Data { get; set; }
         public string FragmentJson { get; set; }
 
         // we're going to add to it

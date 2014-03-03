@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Zbu.Blocks.Tests
 {
@@ -26,6 +27,7 @@ namespace Zbu.Blocks.Tests
                     + "\"IsReset\":false,"
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
+                    + "\"Contexts\":[],"
                     + "\"Blocks\":[]"
                 + "}", json);
         }
@@ -40,7 +42,7 @@ namespace Zbu.Blocks.Tests
                 Type = "testType",
                 Source = "testSource",
                 IsReset = true,
-                DataJson = "datadata"
+                Data = new Dictionary<string, object> { { "value", 1234} }
             };
 
             var serializer = new JsonSerializer();
@@ -56,7 +58,7 @@ namespace Zbu.Blocks.Tests
                     + "\"IsReset\":true,"
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
-                    + "\"DataJson\":\"datadata\","
+                    + "\"Data\":{\"value\":1234},"
                     + "\"FragmentJson\":\"\","
                     + "\"Blocks\":[]"
                 + "}", json);
@@ -98,7 +100,7 @@ namespace Zbu.Blocks.Tests
                     + "\"IsReset\":true,"
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
-                    + "\"DataJson\":\"datadata\","
+                    + "\"Data\":{\"value\":1234},"
                     + "\"FragmentJson\":\"\","
                     + "\"Blocks\":[]"
                 + "}";
@@ -113,7 +115,10 @@ namespace Zbu.Blocks.Tests
             Assert.IsFalse(b.IsKill);
             Assert.IsTrue(b.IsReset);
             Assert.IsTrue(b.IsNamed);
-            Assert.AreEqual("datadata", b.DataJson);
+            Assert.IsNotNull(b.Data);
+            Assert.AreEqual(1, b.Data.Count);
+            Assert.IsTrue(b.Data.ContainsKey("value"));
+            Assert.AreEqual(b.Data["value"], 1234);
             Assert.AreEqual(0, b.Blocks.Length);
         }
 

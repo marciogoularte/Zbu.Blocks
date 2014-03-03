@@ -131,7 +131,7 @@ namespace Zbu.Blocks
                         {
                             Name = blockDataValue.Name,
                             Source = blockDataValue.Source, 
-                            DataJson = blockDataValue.DataJson,
+                            Data = blockDataValue.Data,
                             FragmentJson = blockDataValue.FragmentJson
                         });
 
@@ -173,8 +173,8 @@ namespace Zbu.Blocks
                             namedTempBlock.Source = blockDataValue.Source;
                         //if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
                         //    namedTempBlock.Type = blockDataValue.Type;
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.DataJson))
-                            namedTempBlock.DataJson = blockDataValue.DataJson;
+                        if (blockDataValue.Data != null)
+                            namedTempBlock.Data = blockDataValue.Data;
                         if (!string.IsNullOrWhiteSpace(blockDataValue.FragmentJson))
                             namedTempBlock.FragmentJson = blockDataValue.FragmentJson;
                     }
@@ -204,7 +204,7 @@ namespace Zbu.Blocks
                     {
                         Name = blockDataValue.Name,
                         Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
-                        DataJson = blockDataValue.DataJson,
+                        Data = blockDataValue.Data,
                         FragmentJson = blockDataValue.FragmentJson,
 
                         // there's nothing to merge so all blocks are defined at the same level
@@ -236,7 +236,7 @@ namespace Zbu.Blocks
         private static RenderingBlock GetRenderingFromTemp(TempBlock b)
         {
             var renderingBlocks = b.Blocks.Select(GetRenderingFromTemp); // recurse
-            return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.DataJson, b.FragmentJson);
+            return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.Data, b.FragmentJson);
         }
         
         #endregion

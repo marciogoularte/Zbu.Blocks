@@ -903,7 +903,7 @@ namespace Zbu.Blocks.Tests
                                     + "},"
                                     + "{"
                                         + "\"Name\":\"b\"," // repeat
-                                        + "\"DataJson\":\"{\\\"value\\\":2}\"," // override
+                                        + "\"Data\":{\"value\":2}," // override
                                     + "},"
                                 + "]"
                             + "},"
