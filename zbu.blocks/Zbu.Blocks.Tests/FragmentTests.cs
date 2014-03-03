@@ -31,8 +31,7 @@ namespace Zbu.Blocks.Tests
                     + "\"Blocks\":[]"
                 + "}";
 
-            var serializer = new JsonSerializer();
-            var b = serializer.Deserialize<BlockDataValue>(json);
+            var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 
             // we need to proper UmbracoContext to move further
             // ie we need content types, content cache... dunno how to do it

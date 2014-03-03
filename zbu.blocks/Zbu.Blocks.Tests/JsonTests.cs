@@ -16,8 +16,7 @@ namespace Zbu.Blocks.Tests
                 Source = "testSource"
             };
 
-            var serializer = new JsonSerializer();
-            var json = serializer.Serialize(s);
+            var json = JsonSerializer.Instance.Serialize(s);
 
             Assert.AreEqual(
                 "{"
@@ -45,8 +44,7 @@ namespace Zbu.Blocks.Tests
                 Data = new Dictionary<string, object> { { "value", 1234} }
             };
 
-            var serializer = new JsonSerializer();
-            var json = serializer.Serialize(b);
+            var json = JsonSerializer.Instance.Serialize(b);
 
             Assert.AreEqual(
                 "{"
@@ -79,8 +77,7 @@ namespace Zbu.Blocks.Tests
                     + "\"Blocks\":[]"
                 + "}";
 
-            var serializer = new JsonSerializer();
-            var s = serializer.Deserialize<StructureDataValue>(json);
+            var s = JsonSerializer.Instance.Deserialize<StructureDataValue>(json);
 
             Assert.AreEqual("test structure", s.Description);
             Assert.AreEqual("testname", s.Name);
@@ -106,8 +103,7 @@ namespace Zbu.Blocks.Tests
                     + "\"Blocks\":[]"
                 + "}";
 
-            var serializer = new JsonSerializer();
-            var b = serializer.Deserialize<BlockDataValue>(json);
+            var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 
             Assert.AreEqual("test block", b.Description);
             Assert.AreEqual("testname", b.Name);
@@ -142,8 +138,7 @@ namespace Zbu.Blocks.Tests
                     + "\"Blocks\":[]"
                 + "}";
 
-            var serializer = new JsonSerializer();
-            var b = serializer.Deserialize<BlockDataValue>(json);
+            var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 
             Assert.AreEqual("test block", b.Description);
             Assert.AreEqual("testname", b.Name);
@@ -195,8 +190,7 @@ namespace Zbu.Blocks.Tests
             // that can be "" or null, and it NOT being there at all
             // and we should manage that at interface level? how?
 
-            var serializer = new JsonSerializer();
-            var b = serializer.Deserialize<BlockDataValue>(json);
+            var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 
             Assert.AreEqual("test block", b.Description);
             Assert.AreEqual("testname", b.Name);
@@ -219,8 +213,7 @@ namespace Zbu.Blocks.Tests
                 + "\"Source\":\"testSource\","
                 + "}";
 
-            var serializer = new JsonSerializer();
-            var s = serializer.Deserialize<StructureDataValue>(json);
+            var s = JsonSerializer.Instance.Deserialize<StructureDataValue>(json);
 
             Assert.AreEqual(string.Empty, s.Name);
             Assert.AreEqual("testsource", s.Source);

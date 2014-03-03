@@ -20,11 +20,9 @@ namespace Zbu.Blocks.Tests
                     + "}"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
@@ -50,11 +48,9 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
@@ -81,11 +77,9 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute("ctx", p, x => ((PublishedContent)x).Structures);
@@ -118,11 +112,9 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
@@ -144,11 +136,9 @@ namespace Zbu.Blocks.Tests
                     + "}"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json),
                 Parent = new PublishedContent()
             };
 
@@ -171,13 +161,11 @@ namespace Zbu.Blocks.Tests
                     + "}"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
                 }
             };
 
@@ -207,14 +195,12 @@ namespace Zbu.Blocks.Tests
                     + "}"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -247,14 +233,12 @@ namespace Zbu.Blocks.Tests
                     + "}"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -285,11 +269,9 @@ namespace Zbu.Blocks.Tests
                     + "}"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
@@ -327,11 +309,9 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json)
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
             };
 
             var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
@@ -373,14 +353,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -423,14 +401,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -475,14 +451,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -525,14 +499,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -580,14 +552,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -647,14 +617,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -710,14 +678,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -778,14 +744,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -857,14 +821,12 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json2),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
                 Parent = new PublishedContent
                 {
-                    Structures = serializer.Deserialize<StructureDataValue[]>(json1)
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
                 }
             };
 
@@ -911,11 +873,9 @@ namespace Zbu.Blocks.Tests
                     + "},"
                 + "]";
 
-            var serializer = new JsonSerializer();
-
             var p = new PublishedContent
             {
-                Structures = serializer.Deserialize<StructureDataValue[]>(json),
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json),
             };
 
             var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);

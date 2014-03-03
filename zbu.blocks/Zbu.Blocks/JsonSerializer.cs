@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -49,5 +51,9 @@ namespace Zbu.Blocks
         {
             return JsonConvert.DeserializeObject(s, typeof(T), _settings) as T;
         }
+
+        // no idea how I can access Umbraco's internal serializer
+        // so building our own infrastructure here
+        public static readonly JsonSerializer Instance = new JsonSerializer();
     }
 }

@@ -21,8 +21,7 @@ namespace Zbu.Blocks.DataType
             var json = source.ToString();
             if (string.IsNullOrWhiteSpace(json)) return null;
 
-            var serializer = new JsonSerializer(); // fixme
-            var value = serializer.Deserialize<StructureDataValue[]>(json);
+            var value = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json);
             foreach (var v in value)
                 v.EnsureFragments(preview);
             return value;
