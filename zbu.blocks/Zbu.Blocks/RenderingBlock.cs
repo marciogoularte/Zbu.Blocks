@@ -19,22 +19,16 @@ namespace Zbu.Blocks
         /// <param name="source">The block source.</param>
         /// <param name="blocks">The block inner blocks.</param>
         /// <param name="data">The block data.</param>
-        /// <param name="fragmentJson">The block content fragment json.</param>
+        /// <param name="fragment">The block content fragment.</param>
         /// <remarks>The block data can be null.</remarks>
         public RenderingBlock(string name, string source, IEnumerable<RenderingBlock> blocks, 
-            IDictionary<string, object> data, string fragmentJson)
+            IDictionary<string, object> data, IPublishedContent fragment)
         {
             Name = name;
             Source = source;
             Blocks = new RenderingBlockCollection(blocks);
             Data = data;
-            Fragment = fragmentJson == null ? null : CreateFragmentFromJson(fragmentJson);
-        }
-
-        // fixme
-        static IPublishedContent CreateFragmentFromJson(string json)
-        {
-            return null;
+            Fragment = fragment;
         }
 
         /// <summary>

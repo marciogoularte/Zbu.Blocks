@@ -132,7 +132,7 @@ namespace Zbu.Blocks
                             Name = blockDataValue.Name,
                             Source = blockDataValue.Source, 
                             Data = blockDataValue.Data,
-                            FragmentJson = blockDataValue.FragmentJson
+                            Fragment = blockDataValue.Fragment
                         });
 
             // build the temporary blocks list
@@ -163,20 +163,21 @@ namespace Zbu.Blocks
                             throw new Exception("Only the top-most named block can define a source.");
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
                             throw new Exception("Only the top-most named block can define a type.");
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.DataJson))
+                        if (blockDataValue.Data != null)
                             throw new Exception("Only the top-most named block can define some data.");
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.FragmentJson))
+                        if (blockDataValue.FragmentData != null)
                             throw new Exception("Only the top-most named block can define a fragment.");
                         */
 
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Source))
                             namedTempBlock.Source = blockDataValue.Source;
+                        // fixme - makes no sense to override that one - just ignore it
                         //if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
                         //    namedTempBlock.Type = blockDataValue.Type;
                         if (blockDataValue.Data != null)
                             namedTempBlock.Data = blockDataValue.Data;
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.FragmentJson))
-                            namedTempBlock.FragmentJson = blockDataValue.FragmentJson;
+                        if (blockDataValue.Fragment != null)
+                            namedTempBlock.Fragment = blockDataValue.Fragment;
                     }
 
                     // add our own blocks to the existing temp block
@@ -205,7 +206,7 @@ namespace Zbu.Blocks
                         Name = blockDataValue.Name,
                         Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
                         Data = blockDataValue.Data,
-                        FragmentJson = blockDataValue.FragmentJson,
+                        Fragment = blockDataValue.Fragment,
 
                         // there's nothing to merge so all blocks are defined at the same level
                         // block.Item.Blocks is top-bottom, must reverse
@@ -236,7 +237,7 @@ namespace Zbu.Blocks
         private static RenderingBlock GetRenderingFromTemp(TempBlock b)
         {
             var renderingBlocks = b.Blocks.Select(GetRenderingFromTemp); // recurse
-            return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.Data, b.FragmentJson);
+            return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.Data, b.Fragment);
         }
         
         #endregion

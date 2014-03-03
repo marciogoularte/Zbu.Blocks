@@ -70,5 +70,13 @@ namespace Zbu.Blocks
         /// Gets or sets the blocks collection of the structure.
         /// </summary>
         public BlockDataValue[] Blocks { get; set; }
+
+        // ensures that blocks fragments have been initialized
+        // is invoked by the converter after the whole structure property has been parsed
+        public void EnsureFragments(bool preview)
+        {
+            foreach (var block in Blocks)
+                block.EnsureFragments(preview);
+        }
     }
 }

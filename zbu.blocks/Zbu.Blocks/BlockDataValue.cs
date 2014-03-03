@@ -29,7 +29,7 @@ namespace Zbu.Blocks
             MaxLevel = int.MaxValue;
             Blocks = NoBlocks;
             Data = null;
-            FragmentJson = string.Empty;
+            FragmentData = null;
         }
 
         /// <summary>
@@ -101,14 +101,39 @@ namespace Zbu.Blocks
         public IDictionary<string, object> Data { get; set; }
 
         /// <summary>
-        /// Gets or sets the block content fragment JSON.
+        /// Gets or sets the block content fragment content type alias.
         /// </summary>
-        /// <remarks>Deserializes into content fragment.</remarks>
-        public string FragmentJson { get; set; }
+        public string FragmentType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the block content fragment data.
+        /// </summary>
+        public IDictionary<string, object> FragmentData { get; set; }
+
+        /// <summary>
+        /// Gets or sets the block content fragment.
+        /// </summary>
+        /// <remarks>Must invoke <c>EnsureFragment</c> before the fragment exists. Can be null.</remarks>
+        [JsonIgnore]
+        public IPublishedContent Fragment { get; private set; }
 
         /// <summary>
         /// Gets or sets the inner blocks collection of the block.
         /// </summary>
         public BlockDataValue[] Blocks { get; set; }
+
+        // ensures that blocks fragments have been initialized
+        // is invoked by the converter after the whole structure property has been parsed
+        public void EnsureFragments(bool preview)
+        {
+            if (FragmentData != null && FragmentData.Count > 0)
+            {
+                Fragment = UmbracoContext.Current.ContentCache.InnerCache.CreateFragment(
+                    FragmentType, FragmentData, preview, true);
+            }
+
+            foreach (var block in Blocks)
+                block.EnsureFragments(preview);
+        }
     }
 }

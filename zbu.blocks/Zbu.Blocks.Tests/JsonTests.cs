@@ -59,7 +59,8 @@ namespace Zbu.Blocks.Tests
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
                     + "\"Data\":{\"value\":1234},"
-                    + "\"FragmentJson\":\"\","
+                    + "\"FragmentType\":null,"
+                    + "\"FragmentData\":null,"
                     + "\"Blocks\":[]"
                 + "}", json);
         }
@@ -101,7 +102,7 @@ namespace Zbu.Blocks.Tests
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
                     + "\"Data\":{\"value\":1234},"
-                    + "\"FragmentJson\":\"\","
+                    + "\"FragmentData\":null,"
                     + "\"Blocks\":[]"
                 + "}";
 
@@ -119,6 +120,47 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual(1, b.Data.Count);
             Assert.IsTrue(b.Data.ContainsKey("value"));
             Assert.AreEqual(b.Data["value"], 1234);
+            Assert.AreEqual(0, b.Blocks.Length);
+        }
+
+        [Test]
+        public void DeserializeBlockDataWithFragment()
+        {
+            var json =
+                "{"
+                    + "\"Description\":\"test block\","
+                    + "\"Name\":\"testName\","
+                    + "\"Type\":\"testType\","
+                    + "\"Source\":\"testSource\","
+                    + "\"IsKill\":false,"
+                    + "\"IsReset\":true,"
+                    + "\"MinLevel\":0,"
+                    + "\"MaxLevel\":" + int.MaxValue + ","
+                    + "\"Data\":{\"value\":1234},"
+                    + "\"FragmentType\":\"testType\","
+                    + "\"FragmentData\":{\"value\":5678},"
+                    + "\"Blocks\":[]"
+                + "}";
+
+            var serializer = new JsonSerializer();
+            var b = serializer.Deserialize<BlockDataValue>(json);
+
+            Assert.AreEqual("test block", b.Description);
+            Assert.AreEqual("testname", b.Name);
+            Assert.AreEqual("testtype", b.Type);
+            Assert.AreEqual("testsource", b.Source);
+            Assert.IsFalse(b.IsKill);
+            Assert.IsTrue(b.IsReset);
+            Assert.IsTrue(b.IsNamed);
+            Assert.IsNotNull(b.Data);
+            Assert.AreEqual(1, b.Data.Count);
+            Assert.IsTrue(b.Data.ContainsKey("value"));
+            Assert.AreEqual(b.Data["value"], 1234);
+            Assert.AreEqual("testType", b.FragmentType);
+            Assert.IsNotNull(b.FragmentData);
+            Assert.AreEqual(1, b.FragmentData.Count);
+            Assert.IsTrue(b.FragmentData.ContainsKey("value"));
+            Assert.AreEqual(b.FragmentData["value"], 5678);
             Assert.AreEqual(0, b.Blocks.Length);
         }
 

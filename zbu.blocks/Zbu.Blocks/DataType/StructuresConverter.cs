@@ -22,7 +22,10 @@ namespace Zbu.Blocks.DataType
             if (string.IsNullOrWhiteSpace(json)) return null;
 
             var serializer = new JsonSerializer(); // fixme
-            return serializer.Deserialize<StructureDataValue[]>(json);
+            var value = serializer.Deserialize<StructureDataValue[]>(json);
+            foreach (var v in value)
+                v.EnsureFragments(preview);
+            return value;
         }
 
         public object ConvertSourceToObject(PublishedPropertyType propertyType, object source, bool preview)
