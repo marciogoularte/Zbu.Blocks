@@ -42,12 +42,12 @@ namespace Zbu.Blocks
         {
             // first the default ctor will initialize with default values
             // then we set the type
-            Type = string.IsNullOrWhiteSpace(type) ? null : type.ToLowerInvariant();
+            Type = type;
             if (Type == null) return;
             
-            // fixme - should we throw, log, something?
             BlockDataValue typeBlock;
-            if (!Types.TryGetValue(Type, out typeBlock)) return;
+            if (!Types.TryGetValue(Type, out typeBlock))
+                throw new StructureException("Invalid block type \"{0}\"", Type);
 
             // description is a local thing
             // name is a local thing
@@ -89,7 +89,7 @@ namespace Zbu.Blocks
         /// Gets or sets the type of the block.
         /// </summary>
         /// <remarks>A block with a type will initialize with values from config.</remarks>
-        public string Type { get { return _type; } set { _type = (value ?? string.Empty).ToLowerInvariant(); } }
+        public string Type { get { return _type; } set { _type = string.IsNullOrWhiteSpace(value) ? null : value.ToLowerInvariant(); } }
         private string _type;
 
         /// <summary>
@@ -176,6 +176,11 @@ namespace Zbu.Blocks
         public static void RemoveType(string typeName)
         {
             Types.Remove(typeName.ToLowerInvariant());
+        }
+
+        public static void ClearTypes()
+        {
+            Types.Clear();
         }
     }
 }

@@ -103,6 +103,9 @@ namespace Zbu.Blocks.Tests
                     + "\"Blocks\":[]"
                 + "}";
 
+            BlockDataValue.ClearTypes();
+            BlockDataValue.AddType("testType", new BlockDataValue());
+
             var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 
             Assert.AreEqual("test block", b.Description);
@@ -137,6 +140,9 @@ namespace Zbu.Blocks.Tests
                     + "\"FragmentData\":{\"value\":5678},"
                     + "\"Blocks\":[]"
                 + "}";
+
+            BlockDataValue.ClearTypes();
+            BlockDataValue.AddType("testType", new BlockDataValue());
 
             var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 
@@ -179,16 +185,11 @@ namespace Zbu.Blocks.Tests
                     + "\"Blocks\":[]"
                 + "}";
 
+            BlockDataValue.ClearTypes();
             BlockDataValue.AddType("foo", new BlockDataValue
             {
                 Data = new Dictionary<string, object>{{"doo", 7788}}
             });
-
-            // fixme
-            // this works as long as the json does NOT contain DataJson
-            // so there's a difference between it being there with a value
-            // that can be "" or null, and it NOT being there at all
-            // and we should manage that at interface level? how?
 
             var b = JsonSerializer.Instance.Deserialize<BlockDataValue>(json);
 

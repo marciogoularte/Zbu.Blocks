@@ -151,35 +151,30 @@ namespace Zbu.Blocks
 
                     var isTopMost = namedBlockDataValues.ContainsValue(blockDataValue);
 
-                    // only the top-most named block can set these values?
+                    // non top-most named blocks have some restrictions
                     if (!isTopMost)
                     {
-                        // what shall we do?
-                        // throw? log a warning and ignore them?
-                        // for the time being, we allow them to be overriden
-
-                        /*
+                        // only the top-most named block can set these values
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Source))
-                            throw new Exception("Only the top-most named block can define a source.");
+                            throw new StructureException("Only the top-most named block can define a source.");
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
-                            throw new Exception("Only the top-most named block can define a type.");
+                            throw new StructureException("Only the top-most named block can define a type.");
+
+                        // merge data
                         if (blockDataValue.Data != null)
-                            throw new Exception("Only the top-most named block can define some data.");
-                        if (blockDataValue.FragmentData != null)
-                            throw new Exception("Only the top-most named block can define a fragment.");
-                        */
+                        {
+                            if (namedTempBlock.Data != null)
+                            {
+                                foreach (var kvp in blockDataValue.Data)
+                                    namedTempBlock.Data[kvp.Key] = kvp.Value;
+                            }
+                            else
+                            {
+                                namedTempBlock.Data = blockDataValue.Data;
+                            }
+                        }
 
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.Source))
-                            namedTempBlock.Source = blockDataValue.Source;
-                        // fixme - makes no sense to override that one - just ignore it
-                        //if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
-                        //    namedTempBlock.Type = blockDataValue.Type;
-
-                        // fixme - should probably merge/override instead of replacing
-                        if (blockDataValue.Data != null)
-                            namedTempBlock.Data = blockDataValue.Data;
-
-                        // fixme - that should be illegal
+                        // fully override fragment
                         if (blockDataValue.Fragment != null)
                             namedTempBlock.Fragment = blockDataValue.Fragment;
                     }

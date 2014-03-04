@@ -469,7 +469,7 @@ namespace Zbu.Blocks.Tests
         }
 
         [Test]
-        public void TwoContentsTwoStructuresWithNamedBlocksOverride()
+        public void TwoContentsTwoStructuresWithNamedBlocksOverride1()
         {
             // test named blocks can be overriden
 
@@ -481,6 +481,7 @@ namespace Zbu.Blocks.Tests
                             + "{"
                                 + "\"Name\":\"b\"," // defined a name block
                                 + "\"Source\":\"source1\"," // with a source
+                                + "\"Data\":{\"x\":123}"
                             + "},"
                         + "]"
                     + "},"
@@ -494,6 +495,54 @@ namespace Zbu.Blocks.Tests
                             + "{"
                                 + "\"Name\":\"b\"," // named => same block
                                 + "\"Source\":\"source2\"," // override the source
+                                + "\"Data\":{\"y\":456}"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json2),
+                Parent = new PublishedContent
+                {
+                    Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json1)
+                }
+            };
+
+            // illegal to override the source
+            Assert.Throws<StructureException>(
+                () => RenderingStructure.Compute(p, x => ((PublishedContent) x).Structures));
+        }
+
+        [Test]
+        public void TwoContentsTwoStructuresWithNamedBlocksOverride2()
+        {
+            // test named blocks can be overriden
+
+            const string json1 =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\"," // template
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"b\"," // defined a name block
+                                + "\"Source\":\"source1\"," // with a source
+                                + "\"Data\":{\"x\":123}"
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
+
+            const string json2 =
+                "["
+                    + "{"
+                        + "\"Source\":\"test2\"," // use another template
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Name\":\"b\"," // named => same block
+                                //+ "\"Source\":\"source2\"," // override the source
+                                + "\"Data\":{\"y\":456}"
                             + "},"
                         + "]"
                     + "},"
@@ -518,8 +567,13 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual(1, s.Blocks.Count);
             Assert.AreEqual("b", s.Blocks[0].Name);
 
-            // source has been overriden
-            Assert.AreEqual("source2", s.Blocks[0].Source);
+            // source 
+            Assert.AreEqual("source1", s.Blocks[0].Source);
+
+            // merged data
+            Assert.AreEqual(2, s.Blocks[0].Data.Count);
+            Assert.AreEqual(123, s.Blocks[0].Data["x"]);
+            Assert.AreEqual(456, s.Blocks[0].Data["y"]);
         }
 
         [Test]
