@@ -131,6 +131,7 @@ namespace Zbu.Blocks
                         {
                             Name = blockDataValue.Name,
                             Source = blockDataValue.Source, 
+                            Index = blockDataValue.Index,
                             Data = blockDataValue.Data,
                             Fragment = blockDataValue.Fragment
                         });
@@ -159,6 +160,8 @@ namespace Zbu.Blocks
                             throw new StructureException("Only the top-most named block can define a source.");
                         if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
                             throw new StructureException("Only the top-most named block can define a type.");
+                        if (blockDataValue.Index != BlockDataValue.DefaultIndex)
+                            throw new StructureException("Only the top-most named block can set an index.");
 
                         // merge data
                         if (blockDataValue.Data != null)
@@ -204,6 +207,7 @@ namespace Zbu.Blocks
                     {
                         Name = blockDataValue.Name,
                         Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
+                        Index = blockDataValue.Index,
                         Data = blockDataValue.Data,
                         Fragment = blockDataValue.Fragment,
 
@@ -224,6 +228,13 @@ namespace Zbu.Blocks
             }
 
             tempBlocks.Reverse(); // return top-bottom
+
+            // sort according to indexes
+            // beware! List<T>.Sort() is documented as performing an unstable sort
+            // whereas Enumerable.OrderBy<TSource, TKey>.Sort() is documented as performing a stable sort,
+            // a stable sort meaning that when indexes are equals, the existing order is preserved
+            //tempBlocks.Sort((b1, b2) => b1.Index - b2.Index); // NOT!
+            tempBlocks = tempBlocks.OrderBy(x => x.Index).ToList();
             return tempBlocks;
         }
 

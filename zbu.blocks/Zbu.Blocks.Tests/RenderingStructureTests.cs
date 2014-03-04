@@ -420,7 +420,6 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual("b2", s.Blocks[1].Source);
         }
 
-        //-
         [Test]
         public void TwoContentsTwoStructuresWithNamedBlocks()
         {
@@ -953,6 +952,84 @@ namespace Zbu.Blocks.Tests
 
             // and has proper values
             Assert.AreEqual(2, anon.Blocks["b"].Data["value"]);
+        }
+
+        [Test]
+        public void OneContentManyStructuresAndBlocksAndIndexes1()
+        {
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1\","
+                            + "},"
+                        + "]"
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b2\","
+                                + "\"Index\":10" // move it up
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
+            };
+
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+
+            Assert.AreEqual("test2", s.Source);
+
+            Assert.AreEqual(2, s.Blocks.Count);
+            Assert.AreEqual("b2", s.Blocks[0].Source);
+            Assert.AreEqual("b1", s.Blocks[1].Source);
+        }
+
+        [Test]
+        public void OneContentManyStructuresAndBlocksAndIndexes2()
+        {
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b1\","
+                                + "\"Index\":1000" // move it down
+                            + "},"
+                        + "]"
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Blocks\":["
+                            + "{"
+                                + "\"Source\":\"b2\","
+                            + "},"
+                        + "]"
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
+            };
+
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+
+            Assert.AreEqual("test2", s.Source);
+
+            Assert.AreEqual(2, s.Blocks.Count);
+            Assert.AreEqual("b2", s.Blocks[0].Source);
+            Assert.AreEqual("b1", s.Blocks[1].Source);
         }
     }
 }

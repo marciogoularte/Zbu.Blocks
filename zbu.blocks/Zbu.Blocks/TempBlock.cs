@@ -12,6 +12,7 @@ namespace Zbu.Blocks
 
         public bool Locked { get; set; }
         public bool Killed { get; set; }
+        public int Index { get; set; }
 
         public IDictionary<string, object> Data { get; set; }
         public IPublishedContent Fragment { get; set; }

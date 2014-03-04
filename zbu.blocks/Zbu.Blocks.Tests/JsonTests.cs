@@ -56,6 +56,7 @@ namespace Zbu.Blocks.Tests
                     + "\"IsReset\":true,"
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
+                    + "\"Index\":" + BlockDataValue.DefaultIndex + ","
                     + "\"Data\":{\"value\":1234},"
                     + "\"FragmentType\":null,"
                     + "\"FragmentData\":null,"

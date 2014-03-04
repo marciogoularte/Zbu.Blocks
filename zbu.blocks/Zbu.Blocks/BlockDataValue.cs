@@ -13,6 +13,7 @@ namespace Zbu.Blocks
     public class BlockDataValue
     {
         private readonly static BlockDataValue[] NoBlocks = { };
+        public const int DefaultIndex = 100;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockDataValue"/> class.
@@ -28,6 +29,7 @@ namespace Zbu.Blocks
             IsReset = false;
             MinLevel = 0;
             MaxLevel = int.MaxValue;
+            Index = DefaultIndex;
             Blocks = NoBlocks;
             Data = null;
             FragmentData = null;
@@ -57,6 +59,7 @@ namespace Zbu.Blocks
             IsReset = typeBlock.IsReset;
             MinLevel = typeBlock.MinLevel;
             MaxLevel = typeBlock.MaxLevel;
+            Index = typeBlock.Index;
             Blocks = typeBlock.Blocks;
             Data = typeBlock.Data;
             FragmentData = typeBlock.FragmentData;
@@ -122,7 +125,11 @@ namespace Zbu.Blocks
         /// </summary>
         public int MaxLevel { get; set; }
 
-        // fixme - handle Index, Before, After to sort blocks
+        /// <summary>
+        /// Gets or sets an index value, used to order blocks.
+        /// </summary>
+        /// <remarks>The default index value is <c>DefaultIndex</c>.</remarks>
+        public int Index { get; set; }
 
         /// <summary>
         /// Gets or sets the block data.
