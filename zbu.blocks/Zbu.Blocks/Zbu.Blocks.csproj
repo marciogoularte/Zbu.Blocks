@@ -71,7 +71,6 @@
     <Compile Include="DataType\StructuresEditor.cs" />
     <Compile Include="DataType\StructuresPrevalueEditor.cs" />
     <Compile Include="StructureException.cs" />
-    <Compile Include="Temp.cs" />
     <Compile Include="TempBlock.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
