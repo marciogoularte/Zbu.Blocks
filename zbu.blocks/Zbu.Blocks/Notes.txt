@@ -3,9 +3,8 @@
 
 
 STATUS
-- rendering is working
-- still issue with the controller, will kick in all situations, would want to filter (factory?)
-- must cleanup the controller, implement fragments and block types
+- block types are working, must be configured via code
+- fragments are working
 
 TODO
 
@@ -13,14 +12,6 @@ TODO
 	structures support contexts
 	controller should set contexts? ie for AJAX? that should be a local thing really...
 	  => controller should be overridable
-
-- Fragment
-    code the handling of the fragment in RenderingBlock
-	prob. need a block.fragmentType field to indicate the content type of the fragment
-
-- Block types
-    via a config file
-	implement
 
 - do we want partial structures on children (what is this)?
 
@@ -30,6 +21,39 @@ TODO
 
 	do we want to restrict the list of block name/source/whatever that can appear under a given block?
 	do we need block types to handle all this?
+
+
+CONFIGURE
+
+public class App : ApplicationEventHandler
+{
+	protected override void ApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+	{
+		base.ApplicationStarting(umbracoApplication, applicationContext);
+
+		// register the blocks controller
+		BlocksController.Register();
+
+		PublishedContentRequest.Prepared += (sender, args) =>
+		{
+			// make sure the request has a published content
+			var pr = sender as PublishedContentRequest;
+			if (pr == null || !pr.HasPublishedContent) return;
+
+			// make sure this is the proper website etc
+			// and we have proper structures definition
+			var sitekey = pr.PublishedContent.GetPropertyValue<string>("sitekey", true);
+			if (sitekey != "corporate") return;
+			if (!pr.PublishedContent.HasProperty("structures")) return;
+
+			// plug Zbu.Blocks
+			// a) reset template to route to MVC
+			// b) tell the blocks controller that it needs to handle the request
+			pr.ResetTemplate();
+			BlocksController.HandleThisRequest();
+		};
+	}
+}
 
 
 RENDERING
