@@ -7,15 +7,19 @@ using Umbraco.Core;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Routing;
+using Zbu.Blocks.Mvc;
 
 namespace Zbu.Blocks
 {
     public class App : ApplicationEventHandler
     {
-        // fixme - in fact that one should be in w310
+        // fixme - this should be in w310
         protected override void ApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
             base.ApplicationStarting(umbracoApplication, applicationContext);
+
+            // register the blocks controller
+            BlocksController.Register();
 
             PublishedContentRequest.Prepared += (sender, args) =>
             {
@@ -24,18 +28,20 @@ namespace Zbu.Blocks
                 if (pr == null || !pr.HasPublishedContent) return;
 
                 // make sure this is the corporate website
-                // fixme - nothing to do here so what?
+                // and we have proper structures definition
                 var sitekey = pr.PublishedContent.GetPropertyValue<string>("sitekey", true);
                 if (sitekey != "corporate") return;
+                if (!pr.PublishedContent.HasProperty("structures")) return;
 
-                //InitializeRenderingStructure(pr);
-                pr.TrySetTemplate("dummy-mvc"); // still need a dummy MVC template 'cos we can't clear it
+                // plug Zbu.Blocks
+                // a) because we want to override whatever template is set on the current
+                //   content, and route to MVC, and we cannot do that without setting a
+                //   template, and we cannot clear the current template, we need to use
+                //   a real dummy MVC template
+                // b) tell the blocks controller that it needs to handle the request
+                pr.TrySetTemplate("dummy-mvc");
+                BlocksController.HandleThisRequest();
             };
-
-            // fixme - I want to do it ONLY if we have a proper structure!
-            // see controller factory, there has to be a way to pick the right one...
-            // for now just test like that
-            DefaultRenderMvcControllerResolver.Current.SetDefaultControllerType(typeof(Mvc.BlocksController));
         }
     }
 }

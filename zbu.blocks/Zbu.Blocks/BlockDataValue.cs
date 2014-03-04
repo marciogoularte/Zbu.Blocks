@@ -122,8 +122,7 @@ namespace Zbu.Blocks
         /// </summary>
         public int MaxLevel { get; set; }
 
-        // fixme
-        // should we handle Index, Before, After to sort blocks?!
+        // fixme - handle Index, Before, After to sort blocks
 
         /// <summary>
         /// Gets or sets the block data.

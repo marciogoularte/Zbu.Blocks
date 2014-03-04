@@ -59,6 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockDataValue.cs" />
+    <Compile Include="Mvc\BlocksControllerFactory.cs" />
+    <Compile Include="Mvc\BlockModelTypeConverter.cs" />
     <Compile Include="Mvc\HtmlHelperExtensions.cs" />
     <Compile Include="Mvc\BlocksController.cs" />
     <Compile Include="Mvc\BlockModel.cs" />
