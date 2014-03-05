@@ -11,28 +11,57 @@ namespace Zbu.Blocks
     /// </summary>
     /// <remarks>A collection of rendering blocks is a list, plus an additional
     /// indexer by name to retrieve named blocks.</remarks>
-    public class RenderingBlockCollection : List<RenderingBlock>
+    public class RenderingBlockCollection : IEnumerable<RenderingBlock>
     {
+        private readonly IDictionary<string, RenderingBlock> _blocks
+            = new Dictionary<string, RenderingBlock>(StringComparer.InvariantCultureIgnoreCase);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderingBlockCollection"/> class with blocks.
         /// </summary>
         /// <param name="blocks">The blocks.</param>
         public RenderingBlockCollection(IEnumerable<RenderingBlock> blocks)
-            : base(blocks)
-        { }
+        {
+            foreach (var block in blocks)
+                _blocks[block.Name] = block;
+        }
 
         /// <summary>
         /// Gets a rendering block by its name.
         /// </summary>
         /// <param name="name">The name of the block.</param>
         /// <returns>The corresponding block, if any, else <c>null</c>.</returns>
+        /// <remarks>The name is case-insensitive.</remarks>
         public RenderingBlock this[string name]
         {
             get
             {
-                name = name.ToLowerInvariant();
-                return this.FirstOrDefault(x => x.Name == name);
+                RenderingBlock block;
+                return _blocks.TryGetValue(name, out block) ? block : null;
             }
+        }
+
+        public RenderingBlock this[int index]
+        {
+            get { return _blocks.ElementAtOrDefault(index).Value; }
+        }
+
+        /// <summary>
+        /// Gets the number of blocks contained in the collection.
+        /// </summary>
+        public int Count
+        {
+            get { return _blocks.Count; }
+        }
+
+        public IEnumerator<RenderingBlock> GetEnumerator()
+        {
+            return _blocks.Values.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return _blocks.Values.GetEnumerator();
         }
     }
 }
