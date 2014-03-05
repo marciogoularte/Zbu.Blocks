@@ -118,23 +118,26 @@ namespace Zbu.Blocks
 
             // find named blocks
             // because we're iterating bottom-top, this will get the top-most block for each name
-            var namedBlockDataValues = new Dictionary<string, BlockDataValue>();
+            // the name is case-insensitive
+            var namedBlockDataValues = new Dictionary<string, BlockDataValue>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var b in blockDataValuesArray.Where(x => x.Item.IsNamed).Select(x => x.Item))
                 namedBlockDataValues[b.Name] = b;
 
             // create the temporary named blocks from the top-most block data value
             // whether bottom named blocks can change any of these settings is an option
-            var namedTempBlocks = namedBlockDataValues.Values
-                .ToDictionary(
-                    blockDataValue => blockDataValue.Name,
-                    blockDataValue => new TempBlock
-                        {
-                            Name = blockDataValue.Name,
-                            Source = blockDataValue.Source, 
-                            Index = blockDataValue.Index,
-                            Data = blockDataValue.Data,
-                            Fragment = blockDataValue.Fragment
-                        });
+            var namedTempBlocks = new Dictionary<string, TempBlock>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var blockDataValue in namedBlockDataValues.Values)
+            {
+                var t = new TempBlock
+                {
+                    Name = blockDataValue.Name,
+                    Source = blockDataValue.Source,
+                    Index = blockDataValue.Index,
+                    Fragment = blockDataValue.Fragment
+                };
+                t.MergeData(blockDataValue.Data);
+                namedTempBlocks[blockDataValue.Name] = t;
+            }
 
             // build the temporary blocks list
             var tempBlocks = new List<TempBlock>();
@@ -163,19 +166,8 @@ namespace Zbu.Blocks
                         if (blockDataValue.Index != BlockDataValue.DefaultIndex)
                             throw new StructureException("Only the top-most named block can set an index.");
 
-                        // merge data
-                        if (blockDataValue.Data != null)
-                        {
-                            if (namedTempBlock.Data != null)
-                            {
-                                foreach (var kvp in blockDataValue.Data)
-                                    namedTempBlock.Data[kvp.Key] = kvp.Value;
-                            }
-                            else
-                            {
-                                namedTempBlock.Data = blockDataValue.Data;
-                            }
-                        }
+                        // merge data - won't do anything if null
+                        namedTempBlock.MergeData(blockDataValue.Data);
 
                         // fully override fragment
                         if (blockDataValue.Fragment != null)
@@ -203,18 +195,19 @@ namespace Zbu.Blocks
                     // not a named block
 
                     // just add a new temp block
-                    tempBlocks.Add(new TempBlock
+                    var t = new TempBlock
                     {
                         Name = blockDataValue.Name,
                         Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
                         Index = blockDataValue.Index,
-                        Data = blockDataValue.Data,
                         Fragment = blockDataValue.Fragment,
 
                         // there's nothing to merge so all blocks are defined at the same level
                         // block.Item.Blocks is top-bottom, must reverse
                         Blocks = GetTempFromData(block.Item.Blocks.Reverse().Select(b => new WithLevel<BlockDataValue>(b, blockLevel)))
-                    });
+                    };
+                    t.MergeData(blockDataValue.Data);
+                    tempBlocks.Add(t);
                 }
             }
 
@@ -249,7 +242,7 @@ namespace Zbu.Blocks
             var renderingBlocks = b.Blocks.Select(GetRenderingFromTemp); // recurse
             return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.Data, b.Fragment);
         }
-        
+
         #endregion
     }
 }

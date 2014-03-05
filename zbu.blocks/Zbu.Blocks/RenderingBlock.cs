@@ -18,7 +18,7 @@ namespace Zbu.Blocks
         /// <param name="name">The name of the block.</param>
         /// <param name="source">The block source.</param>
         /// <param name="blocks">The block inner blocks.</param>
-        /// <param name="data">The block data.</param>
+        /// <param name="data">The block data dictionary (using case-insensitive keys).</param>
         /// <param name="fragment">The block content fragment.</param>
         /// <remarks>The block data can be null.</remarks>
         public RenderingBlock(string name, string source, IEnumerable<RenderingBlock> blocks, 
@@ -48,8 +48,9 @@ namespace Zbu.Blocks
         public RenderingBlockCollection Blocks { get; private set; }
 
         /// <summary>
-        /// Gets or sets the block content fragment.
+        /// Gets or sets the block data dictionary.
         /// </summary>
+        /// <remarks>The dictionary uses case-insensitive keys.</remarks>
         public IDictionary<string, object> Data{ get; private set; }
 
         /// <summary>

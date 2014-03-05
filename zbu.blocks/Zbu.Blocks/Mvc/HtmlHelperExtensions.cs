@@ -8,6 +8,9 @@ namespace Zbu.Blocks.Mvc
     {
         public static MvcHtmlString Block(this HtmlHelper helper, RenderingBlock block)
         {
+            // nothing?
+            if (block == null) return null;
+
             // get the current block model
             // BlockModel<TContent> : BlockModel
             var currentBlockModel = helper.ViewData.Model as BlockModel;
