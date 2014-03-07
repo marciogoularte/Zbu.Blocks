@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Zbu.Blocks.Tests
@@ -220,6 +221,55 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual(string.Empty, s.Name);
             Assert.AreEqual("testsource", s.Source);
             Assert.AreEqual(0, s.Blocks.Length);
+        }
+
+        [Test]
+        public void StripCommentsTrimsSpNlTab()
+        {
+            const string s = @"
+
+    [ ]
+
+";
+            const string e = "[ ]";
+
+            Assert.AreEqual(e, s.Trim());
+            var x = JsonSerializer.Instance.DeserializeNoComments<object>(e);
+            var y = JsonSerializer.Instance.Deserialize<object>(s);
+        }
+
+        [Test]
+        public void StripComments()
+        {
+            const string s = @"
+
+    [
+    // single line comments
+        { // end of line comments
+            ""Foo"":1234,
+            ""Url"":""http://this.is.not.a.comment"", // this is a comment
+            ""Bah"":""this /* is not a comment */""
+        }
+/*
+    and now some block // comments
+    containing a ""string""
+*/
+    ]
+
+";
+            const string e = @"[
+
+        {
+            ""Foo"":1234,
+            ""Url"":""http://this.is.not.a.comment"",
+            ""Bah"":""this /* is not a comment */""
+        }
+
+    ]";
+
+            Assert.AreEqual(e, JsonSerializer.StripComments(s));
+            var x = JsonSerializer.Instance.DeserializeNoComments<object>(e);
+            var y = JsonSerializer.Instance.Deserialize<object>(s);
         }
     }
 }
