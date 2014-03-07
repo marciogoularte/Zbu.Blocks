@@ -22,8 +22,18 @@ namespace Zbu.Blocks
         /// <param name="blocks">The blocks.</param>
         public RenderingBlockCollection(IEnumerable<RenderingBlock> blocks)
         {
+            // not every block has a name
+            // for those that don't have a name, we need to create one
+            // which hopefully will not collide with actual block names
+
+            var i = 0;
             foreach (var block in blocks)
-                _blocks[block.Name] = block;
+            {
+                var key = string.IsNullOrWhiteSpace(block.Name)
+                    ? "___block." + (i++) + "___"
+                    : block.Name;
+                _blocks[key] = block;
+            }
         }
 
         /// <summary>
