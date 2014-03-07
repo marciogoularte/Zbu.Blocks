@@ -10,6 +10,7 @@ namespace Zbu.Blocks
     {
         private readonly static BlockDataValue[] NoBlocks = {};
         public static readonly string[] NoContexts = {};
+        public static readonly string[] NoContentTypes = { };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StructureDataValue"/> class.
@@ -25,6 +26,8 @@ namespace Zbu.Blocks
             MaxLevel = int.MaxValue;
             Blocks = NoBlocks;
             Contexts = NoContexts;
+            ContentTypes = NoContentTypes;
+            ContentTypesNegate = false;
         }
 
         /// <summary>
@@ -65,6 +68,16 @@ namespace Zbu.Blocks
         /// Gets or sets the context keys for which the structure applies.
         /// </summary>
         public string[] Contexts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content types for which the structure applies.
+        /// </summary>
+        public string[] ContentTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to negate the content types filter.
+        /// </summary>
+        public bool ContentTypesNegate { get; set; }
 
         /// <summary>
         /// Gets or sets the blocks collection of the structure.

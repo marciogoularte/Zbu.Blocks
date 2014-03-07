@@ -42,10 +42,7 @@ namespace Zbu.Blocks.Tests
             get { throw new NotImplementedException(); }
         }
 
-        public string DocumentTypeAlias
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public string DocumentTypeAlias { get; set; }
 
         public int DocumentTypeId
         {

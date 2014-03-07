@@ -96,6 +96,77 @@ namespace Zbu.Blocks.Tests
         }
 
         [Test]
+        public void OneContentTwoStructuresContentTypesIncl()
+        {
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\""
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"ContentTypes\": [ \"ctype1\" ]"
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json),
+                DocumentTypeAlias = "ctype2"
+            };
+
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test1", s.Source);
+
+            p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json),
+                DocumentTypeAlias = "ctype1"
+            };
+
+            s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test2", s.Source);
+        }
+
+        [Test]
+        public void OneContentTwoStructuresContentTypesExcl()
+        {
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\""
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"ContentTypes\": [ \"ctype1\" ],"
+                        + "\"ContentTypesNegate\": true"
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json),
+                DocumentTypeAlias = "ctype2"
+            };
+
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test2", s.Source);
+
+            p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json),
+                DocumentTypeAlias = "ctype1"
+            };
+
+            s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test1", s.Source);
+        }
+
+        [Test]
         public void OneContentTwoStructuresWithLevels()
         {
             // test structure exclusion by level

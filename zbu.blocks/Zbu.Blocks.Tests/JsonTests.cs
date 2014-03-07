@@ -28,6 +28,8 @@ namespace Zbu.Blocks.Tests
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
                     + "\"Contexts\":[],"
+                    + "\"ContentTypes\":[],"
+                    + "\"ContentTypesNegate\":false,"
                     + "\"Blocks\":[]"
                 + "}", json);
         }
