@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using Umbraco.Web;
 using Umbraco.Web.Models;
@@ -8,13 +9,18 @@ namespace Zbu.Blocks.Mvc
 {
     public class BlocksController : RenderMvcController
     {
+        private static bool _registered;
+        private static string _structuresPropertyAlias = "structures";
+        private static Func<string> _getContext;
+
         public override ActionResult Index(RenderModel model)
         {
             var content = model.Content;
 
             // compute the rendering structure
-            var rs = RenderingStructure.Compute(content,
-                x => x.GetPropertyValue<IEnumerable<StructureDataValue>>("structures"));
+            var context = _getContext == null ? null : _getContext();
+            var rs = RenderingStructure.Compute(context, content,
+                x => x.GetPropertyValue<IEnumerable<StructureDataValue>>(_structuresPropertyAlias));
             if (rs == null)
                 return base.Index(model);
 
@@ -36,9 +42,41 @@ namespace Zbu.Blocks.Mvc
         //    return new BlockModel<T>(content, rs, culture);
         //}
 
+        public static class Settings
+        {
+            public static string StucturesPropertyAlias
+            {
+                get { return _structuresPropertyAlias; }
+                set
+                {
+                    EnsureWriteable();
+                    if (string.IsNullOrWhiteSpace(value))
+                        throw new ArgumentException("Cannot be null nor empty.", "value");
+                    _structuresPropertyAlias = value;
+                }
+            }
+
+            public static Func<string> GetContext
+            {
+                get { return _getContext; }
+                set
+                {
+                    EnsureWriteable();
+                    _getContext = value;
+                }
+            }
+        }
+
+        public static void EnsureWriteable()
+        {
+            if (_registered)
+                throw new InvalidOperationException("Cannot change settings once the controller has been registered.");
+        }
+
         public static void Register()
         {
             FilteredControllerFactoriesResolver.Current.InsertType<BlocksControllerFactory>();
+            _registered = true;
         }
 
         public static void HandleThisRequest()
