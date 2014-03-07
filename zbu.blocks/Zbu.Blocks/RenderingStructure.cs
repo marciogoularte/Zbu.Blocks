@@ -65,11 +65,11 @@ namespace Zbu.Blocks
                 foreach (var s in contentStructureDataValues
                     .Where(x => x.MinLevel <= l && x.MaxLevel >= l)
                     .Where(x => (checkContext == null && x.Contexts.Length == 0) 
-                        || (checkContext != null && x.Contexts.Contains(checkContext)))
+                        || (checkContext != null && x.Contexts.Contains(checkContext, StringComparer.InvariantCultureIgnoreCase)))
                     .Where(x => x.ContentTypes == null || x.ContentTypes.Length == 0
                         || (x.ContentTypesNegate
-                            ? !x.ContentTypes.Contains(baseContentTypeAlias)
-                            : x.ContentTypes.Contains(baseContentTypeAlias)))
+                            ? !x.ContentTypes.Contains(baseContentTypeAlias, StringComparer.InvariantCultureIgnoreCase)
+                            : x.ContentTypes.Contains(baseContentTypeAlias, StringComparer.InvariantCultureIgnoreCase)))
                     .Reverse())
                 {
                     structureDataValues.Add(new WithLevel<StructureDataValue>(s, l));
