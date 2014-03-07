@@ -49,7 +49,7 @@ namespace Zbu.Blocks
             // sort order is bottom-top
             var structureDataValues = new List<WithLevel<StructureDataValue>>();
             var level = 0;
-            var baseContent = content;
+            var baseContentTypeAlias = content.DocumentTypeAlias;
             while (content != null)
             {
                 var contentStructureDataValues = propertyAccessor(content);
@@ -67,9 +67,9 @@ namespace Zbu.Blocks
                     .Where(x => (checkContext == null && x.Contexts.Length == 0) 
                         || (checkContext != null && x.Contexts.Contains(checkContext)))
                     .Where(x => x.ContentTypes == null || x.ContentTypes.Length == 0
-                        || (x.ContentTypesNegate 
-                            ? !x.ContentTypes.Contains(baseContent.DocumentTypeAlias)
-                            : x.ContentTypes.Contains(baseContent.DocumentTypeAlias)))
+                        || (x.ContentTypesNegate
+                            ? !x.ContentTypes.Contains(baseContentTypeAlias)
+                            : x.ContentTypes.Contains(baseContentTypeAlias)))
                     .Reverse())
                 {
                     structureDataValues.Add(new WithLevel<StructureDataValue>(s, l));
