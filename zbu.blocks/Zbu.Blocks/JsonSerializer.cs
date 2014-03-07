@@ -15,11 +15,11 @@ namespace Zbu.Blocks
     /// Provides JSON serialization service.
     /// </summary>
     /// <remarks>See Umbraco's Umbraco.Core.Serialization.JsonNetSerializer</remarks>
-    internal class JsonSerializer
+    public class JsonSerializer
     {
         private readonly JsonSerializerSettings _settings;
 
-        public JsonSerializer()
+        private JsonSerializer()
         {
             _settings = new JsonSerializerSettings();
 
@@ -75,7 +75,7 @@ namespace Zbu.Blocks
         // by default JSON does not support comments
         // but we let ppl put comments in theirs
         // so we need to filter them out
-        public static string StripComments(string s)
+        internal static string StripComments(string s)
         {
             var r = Regex.Replace(s,
                 //ReBlockComments + "|" + ReLineComments + "|" + ReStrings + "|" + ReVerbatimStrings,
