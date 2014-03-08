@@ -15,14 +15,16 @@ namespace Zbu.Blocks.Mvc
 
         public class GetActionResultEventArgs : EventArgs
         {
-            public GetActionResultEventArgs(RenderModel model, RenderingStructure structure)
+            public GetActionResultEventArgs(RenderModel model, RenderingStructure structure, string context)
             {
                 Model = model;
                 Structure = structure;
+                Context = context;
             }
 
             public RenderModel Model { get; private set; }
             public RenderingStructure Structure { get; private set; }
+            public string Context { get; private set; }
             public ActionResult Result { get; set; }
         }
 
@@ -43,7 +45,7 @@ namespace Zbu.Blocks.Mvc
             // event
             if (GetActionResult != null)
             {
-                var args = new GetActionResultEventArgs(model, rs);
+                var args = new GetActionResultEventArgs(model, rs, context);
                 GetActionResult(this, args);
                 if (args.Result != null)
                     return args.Result;
