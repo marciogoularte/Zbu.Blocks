@@ -13,16 +13,41 @@ namespace Zbu.Blocks.Mvc
         private static string _structuresPropertyAlias = "structures";
         private static Func<string> _getContext;
 
+        public class GetActionResultEventArgs : EventArgs
+        {
+            public GetActionResultEventArgs(RenderModel model, RenderingStructure structure)
+            {
+                Model = model;
+                Structure = structure;
+            }
+
+            public RenderModel Model { get; private set; }
+            public RenderingStructure Structure { get; private set; }
+            public ActionResult Result { get; set; }
+        }
+
+        public static event EventHandler<GetActionResultEventArgs> GetActionResult;
+
         public override ActionResult Index(RenderModel model)
         {
             var content = model.Content;
 
             // compute the rendering structure
+            // get a context if a provider has been configured
             var context = _getContext == null ? null : _getContext();
             var rs = RenderingStructure.Compute(context, content,
                 x => x.GetPropertyValue<IEnumerable<StructureDataValue>>(_structuresPropertyAlias));
             if (rs == null)
                 return base.Index(model);
+
+            // event
+            if (GetActionResult != null)
+            {
+                var args = new GetActionResultEventArgs(model, rs);
+                GetActionResult(this, args);
+                if (args.Result != null)
+                    return args.Result;
+            }
 
             // create a basic BlockModel model - if the view wants a generic
             // BlockModel<TContent> then UmbracoViewPage<> will map using the
@@ -67,7 +92,7 @@ namespace Zbu.Blocks.Mvc
             }
         }
 
-        public static void EnsureWriteable()
+        private static void EnsureWriteable()
         {
             if (_registered)
                 throw new InvalidOperationException("Cannot change settings once the controller has been registered.");
