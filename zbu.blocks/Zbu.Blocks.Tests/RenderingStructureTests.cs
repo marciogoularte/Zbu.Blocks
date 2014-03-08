@@ -96,6 +96,37 @@ namespace Zbu.Blocks.Tests
         }
 
         [Test]
+        public void OneContentTwoStructuresInNullContext()
+        {
+            // without context, test2 is picked
+            // with context, only test1 is visble
+
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\""
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\","
+                        + "\"Contexts\": [ null, \"ctx\" ]"
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
+            };
+
+            var s = RenderingStructure.Compute("ctx", p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test2", s.Source);
+
+            s = RenderingStructure.Compute(null, p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test2", s.Source);
+        }
+
+        [Test]
         public void OneContentTwoStructuresContentTypesIncl()
         {
             const string json =

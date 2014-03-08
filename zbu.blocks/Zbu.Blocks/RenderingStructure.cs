@@ -66,7 +66,7 @@ namespace Zbu.Blocks
                 var l = level;
                 foreach (var s in contentStructureDataValues
                     .Where(x => x.MinLevel <= l && x.MaxLevel >= l)
-                    .Where(x => (checkContext == null && x.Contexts.Length == 0) 
+                    .Where(x => (checkContext == null && (x.Contexts.Length == 0 || x.Contexts.Contains(null)))
                         || (checkContext != null && x.Contexts.Contains(checkContext, StringComparer.InvariantCultureIgnoreCase)))
                     .Where(x => x.ContentTypes == null || x.ContentTypes.Length == 0
                         || (x.ContentTypesNegate

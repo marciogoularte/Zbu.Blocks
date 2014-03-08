@@ -27,6 +27,7 @@ namespace Zbu.Blocks.Tests
                     + "\"IsReset\":false,"
                     + "\"MinLevel\":0,"
                     + "\"MaxLevel\":" + int.MaxValue + ","
+                    + "\"Data\":null,"
                     + "\"Contexts\":[],"
                     + "\"ContentTypes\":[],"
                     + "\"ContentTypesNegate\":false,"
