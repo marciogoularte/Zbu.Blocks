@@ -57,5 +57,18 @@ namespace Zbu.Blocks
         /// Gets or sets the block content fragment.
         /// </summary>
         public IPublishedContent Fragment { get; private set; }
+
+        public T GetData<T>(string key)
+        {
+            return GetData(key, default(T));
+        }
+
+        public T GetData<T>(string key, T defaultValue)
+        {
+            if (Data == null) return defaultValue;
+            object o;
+            if (!Data.TryGetValue(key, out o)) return defaultValue;
+            return o is T ? (T) o : defaultValue;
+        }
     }
 }
