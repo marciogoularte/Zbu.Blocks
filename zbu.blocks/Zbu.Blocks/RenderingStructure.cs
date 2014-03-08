@@ -15,8 +15,10 @@ namespace Zbu.Blocks
         /// </summary>
         /// <param name="source">The structure source.</param>
         /// <param name="blocks">The structure blocks.</param>
-        public RenderingStructure(string source, IEnumerable<RenderingBlock> blocks)
-            : base(null, source, blocks, null, null)
+        /// <param name="data">The structure data dictionary (using case-insensitive keys).</param>
+        /// <remarks>The structure data can be null.</remarks>
+        public RenderingStructure(string source, IEnumerable<RenderingBlock> blocks, IDictionary<string, object> data)
+            : base(null, source, blocks, data, null)
         {
             //Source = source;
             //Blocks = new RenderingBlockCollection(blocks);
@@ -92,20 +94,23 @@ namespace Zbu.Blocks
                         .Reverse() // bottom-top
                         .Select(x => new WithLevel<BlockDataValue>(x, s.Level)));
 
-            // create the temporary structure
-            var tempStructure = new TempStructure
-            {
-                // walk up the structures looking for a proper source else fall back to "default"
-                Source = structureDataValues
+            // walk up the structures looking for a proper source else fall back to "default"
+            var source = structureDataValues
                     .Select(x => string.IsNullOrEmpty(x.Item.Source) ? x.Item.Name : x.Item.Source) // pick .Source else fallback to .Name
                     .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) // pick the first that's not empty
-                         ?? "default", // if everything fails then fall back to "default"
+                         ?? "default"; // if everything fails then fall back to "default"
 
-                // recursively get the blocks
-                Blocks = GetTempFromData(blockDataValues) // bottom-up -> top-bottom
-            };
+            // recursively get the blocks
+            var blocks = GetTempFromData(blockDataValues); // bottom-up -> top-bottom
 
-            return GetRenderingFromTemp(tempStructure);
+            // merge all data
+            var data = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            structureDataValues.Reverse(); // top-bottom
+            foreach (var structureDataValue in structureDataValues.Where(x => x.Item.Data != null))
+                foreach (var kvp in structureDataValue.Item.Data)
+                    data[kvp.Key] = kvp.Value;
+
+            return new RenderingStructure(source, blocks.Select(GetRenderingFromTemp), data.Count == 0 ? null : data);
         }
 
         // input is a collection of block data values
@@ -234,12 +239,6 @@ namespace Zbu.Blocks
             //tempBlocks.Sort((b1, b2) => b1.Index - b2.Index); // NOT!
             tempBlocks = tempBlocks.OrderBy(x => x.Index).ToList();
             return tempBlocks;
-        }
-
-        private static RenderingStructure GetRenderingFromTemp(TempStructure s)
-        {
-            var renderingBlocks = s.Blocks.Select(GetRenderingFromTemp); // recurse
-            return new RenderingStructure(s.Source, renderingBlocks);
         }
 
         private static RenderingBlock GetRenderingFromTemp(TempBlock b)

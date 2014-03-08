@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Zbu.Blocks
@@ -25,6 +26,7 @@ namespace Zbu.Blocks
             MinLevel = 0;
             MaxLevel = int.MaxValue;
             Blocks = NoBlocks;
+            Data = null;
             Contexts = NoContexts;
             ContentTypes = NoContentTypes;
             ContentTypesNegate = false;
@@ -63,6 +65,11 @@ namespace Zbu.Blocks
         /// Gets or sets the maximum level at which the structure applies.
         /// </summary>
         public int MaxLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the structure data.
+        /// </summary>
+        public IDictionary<string, object> Data { get; set; }
 
         /// <summary>
         /// Gets or sets the context keys for which the structure applies.
