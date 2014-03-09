@@ -72,9 +72,14 @@ namespace Zbu.Blocks.Mvc
             // we implemented in BlockModelTypeConverter.
 
             // render that block
-            return viewData == null
+            var blockHtml = viewData == null
                 ? helper.Partial(block.Source, blockModel)
                 : helper.Partial(block.Source, blockModel, viewData);
+
+            return !BlocksController.Settings.TraceBlocksInHtml
+                ? blockHtml
+                : new MvcHtmlString(string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
+                    block.Source, Environment.NewLine, blockHtml));
         }
 
         private static ViewDataDictionary AsViewDataDictionary(this object o)

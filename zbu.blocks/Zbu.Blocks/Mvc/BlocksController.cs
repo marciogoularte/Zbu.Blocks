@@ -12,6 +12,7 @@ namespace Zbu.Blocks.Mvc
         private static bool _registered;
         private static string _structuresPropertyAlias = "structures";
         private static Func<string> _getContext;
+        private static bool _traceBlocksInHtml;
 
         public class GetActionResultEventArgs : EventArgs
         {
@@ -90,6 +91,16 @@ namespace Zbu.Blocks.Mvc
                 {
                     EnsureWriteable();
                     _getContext = value;
+                }
+            }
+
+            public static bool TraceBlocksInHtml 
+            { 
+                get { return _traceBlocksInHtml; }
+                set
+                {
+                    EnsureWriteable();
+                    _traceBlocksInHtml = value;
                 }
             }
         }
