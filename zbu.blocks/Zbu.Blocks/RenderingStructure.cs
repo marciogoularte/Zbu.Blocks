@@ -186,7 +186,9 @@ namespace Zbu.Blocks
 
                     // add our own blocks to the existing temp block
                     if (!namedTempBlock.Locked)
-                        namedTempBlock.BlockDataValues.AddRange(blockDataValue.Blocks.Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
+                        namedTempBlock.BlockDataValues.AddRange(blockDataValue.Blocks
+                            .Where(b => b.MinLevel <= blockLevel && b.MaxLevel >= blockLevel)
+                            .Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
 
                     // if reset, lock temp block blocks collection
                     if (blockDataValue.IsReset)
@@ -214,7 +216,9 @@ namespace Zbu.Blocks
 
                         // there's nothing to merge so all blocks are defined at the same level
                         // block.Item.Blocks is top-bottom, must reverse
-                        Blocks = GetTempFromData(block.Item.Blocks.Reverse().Select(b => new WithLevel<BlockDataValue>(b, blockLevel)))
+                        Blocks = GetTempFromData(block.Item.Blocks.Reverse()
+                            .Where(b => b.MinLevel <= blockLevel && b.MaxLevel >= blockLevel)
+                            .Select(b => new WithLevel<BlockDataValue>(b, blockLevel)))
                     };
                     t.MergeData(blockDataValue.Data);
                     tempBlocks.Add(t);
