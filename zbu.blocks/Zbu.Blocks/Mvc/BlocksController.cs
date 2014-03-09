@@ -12,7 +12,6 @@ namespace Zbu.Blocks.Mvc
         private static bool _registered;
         private static string _structuresPropertyAlias = "structures";
         private static Func<string> _getContext;
-        private static bool _traceBlocksInHtml;
 
         public class GetActionResultEventArgs : EventArgs
         {
@@ -21,11 +20,16 @@ namespace Zbu.Blocks.Mvc
                 Model = model;
                 Structure = structure;
                 Context = context;
+
+                TraceBlocksInHtml = false;
             }
 
             public RenderModel Model { get; private set; }
             public RenderingStructure Structure { get; private set; }
             public string Context { get; private set; }
+
+            public bool TraceBlocksInHtml { get; set; }
+
             public ActionResult Result { get; set; }
         }
 
@@ -48,6 +52,7 @@ namespace Zbu.Blocks.Mvc
             {
                 var args = new GetActionResultEventArgs(model, rs, context);
                 GetActionResult(this, args);
+                TraceBlocksInHtml = args.TraceBlocksInHtml;
                 if (args.Result != null)
                     return args.Result;
             }
@@ -93,16 +98,6 @@ namespace Zbu.Blocks.Mvc
                     _getContext = value;
                 }
             }
-
-            public static bool TraceBlocksInHtml 
-            { 
-                get { return _traceBlocksInHtml; }
-                set
-                {
-                    EnsureWriteable();
-                    _traceBlocksInHtml = value;
-                }
-            }
         }
 
         private static void EnsureWriteable()
@@ -121,5 +116,7 @@ namespace Zbu.Blocks.Mvc
         {
             BlocksControllerFactory.HandleThisRequest();
         }
+
+        public bool TraceBlocksInHtml { get; private set; }
     }
 }

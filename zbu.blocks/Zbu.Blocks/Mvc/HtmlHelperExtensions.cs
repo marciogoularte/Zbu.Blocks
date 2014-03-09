@@ -76,7 +76,9 @@ namespace Zbu.Blocks.Mvc
                 ? helper.Partial(block.Source, blockModel)
                 : helper.Partial(block.Source, blockModel, viewData);
 
-            return !BlocksController.Settings.TraceBlocksInHtml
+            var controller = helper.ViewContext.Controller as BlocksController;
+            var traceBlocksInHtml = controller != null && controller.TraceBlocksInHtml;
+            return !traceBlocksInHtml
                 ? blockHtml
                 : new MvcHtmlString(string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
                     block.Source, Environment.NewLine, blockHtml));
