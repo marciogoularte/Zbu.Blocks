@@ -11,7 +11,7 @@ namespace Zbu.Blocks.Mvc
     {
         private static bool _registered;
         private static string _structuresPropertyAlias = "structures";
-        private static Func<string> _getContext;
+        private static Func<BlocksController, string> _getContext;
 
         public class GetActionResultEventArgs : EventArgs
         {
@@ -41,7 +41,7 @@ namespace Zbu.Blocks.Mvc
 
             // compute the rendering structure
             // get a context if a provider has been configured
-            var context = _getContext == null ? null : _getContext();
+            var context = _getContext == null ? null : _getContext(this);
             var rs = RenderingStructure.Compute(context, content,
                 x => x.GetPropertyValue<IEnumerable<StructureDataValue>>(_structuresPropertyAlias));
             if (rs == null)
@@ -89,7 +89,7 @@ namespace Zbu.Blocks.Mvc
                 }
             }
 
-            public static Func<string> GetContext
+            public static Func<BlocksController, string> GetContext
             {
                 get { return _getContext; }
                 set
