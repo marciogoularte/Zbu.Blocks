@@ -96,6 +96,41 @@ namespace Zbu.Blocks.Tests
         }
 
         [Test]
+        public void OneContentTwoStructuresInWildcardContext()
+        {
+            // without context, test2 is picked
+            // with context, only test1 is visble
+
+            const string json =
+                "["
+                    + "{"
+                        + "\"Source\":\"test1\","
+                        + "\"Contexts\": [ \"ctx-*\" ]"
+                    + "},"
+                    + "{"
+                        + "\"Source\":\"test2\""
+                    + "},"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
+            };
+
+            var s = RenderingStructure.Compute("ctx-666", p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test1", s.Source);
+
+            s = RenderingStructure.Compute(null, p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test2", s.Source);
+
+            s = RenderingStructure.Compute(" ", p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test2", s.Source);
+        }
+
+        [Test]
         public void OneContentTwoStructuresInNullContext()
         {
             // without context, test2 is picked

@@ -42,6 +42,41 @@ namespace Zbu.Blocks
             return Compute(null, content, propertyAccessor);
         }
 
+        private static bool AppliesByContext(StructureDataValue structure, string context)
+        {
+            // fixme - would we want to support negated contexts?
+            // ie do NOT apply do 'ajax-*'? but to everything else?
+
+            // null context => applies if has no contexts or contexts contains 'null'
+            if (context == null)
+                return structure.Contexts.Length == 0 || structure.Contexts.Contains(null);
+
+            // non-null context => cannot apply if contexts is empty
+            if (structure.Contexts.Length == 0)
+                return false;
+
+            // applies if contexts contains the context
+            if (structure.Contexts.Contains(context, StringComparer.InvariantCultureIgnoreCase))
+                return true;
+
+            // applies if a contexts item is a wildcard and matches
+            return structure.Contexts.Any(x =>
+                x.EndsWith("*")
+                && context.StartsWith(x.Substring(0, x.Length - 1), StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        private static bool AppliesByContentType(StructureDataValue structure, string contentType)
+        {
+            // note: do not have to handle 'null' here as we do with contexts, because the required
+            // context could be null (no context) but the current content type is never null.
+
+            if (structure.ContentTypes == null || structure.ContentTypes.Length == 0)
+                return true;
+
+            var contains = structure.ContentTypes.Contains(contentType, StringComparer.InvariantCultureIgnoreCase);
+            return structure.ContentTypesNegate ? !contains : contains;
+        }
+
         public static RenderingStructure Compute(string context, IPublishedContent content, Func<IPublishedContent, IEnumerable<StructureDataValue>> propertyAccessor)
         {
             var checkContext = string.IsNullOrWhiteSpace(context) ? null : context.ToLowerInvariant();
@@ -65,13 +100,9 @@ namespace Zbu.Blocks
 
                 var l = level;
                 foreach (var s in contentStructureDataValues
-                    .Where(x => x.MinLevel <= l && x.MaxLevel >= l)
-                    .Where(x => (checkContext == null && (x.Contexts.Length == 0 || x.Contexts.Contains(null)))
-                        || (checkContext != null && x.Contexts.Contains(checkContext, StringComparer.InvariantCultureIgnoreCase)))
-                    .Where(x => x.ContentTypes == null || x.ContentTypes.Length == 0
-                        || (x.ContentTypesNegate
-                            ? !x.ContentTypes.Contains(baseContentTypeAlias, StringComparer.InvariantCultureIgnoreCase)
-                            : x.ContentTypes.Contains(baseContentTypeAlias, StringComparer.InvariantCultureIgnoreCase)))
+                    .Where(x => x.MinLevel <= l && x.MaxLevel >= l
+                        && AppliesByContext(x, checkContext)
+                        && AppliesByContentType(x, baseContentTypeAlias))
                     .Reverse())
                 {
                     structureDataValues.Add(new WithLevel<StructureDataValue>(s, l));
