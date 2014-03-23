@@ -61,7 +61,8 @@ namespace Zbu.Blocks
 
             // applies if a contexts item is a wildcard and matches
             return structure.Contexts.Any(x =>
-                x.EndsWith("*")
+                x != null
+                && x.EndsWith("*")
                 && context.StartsWith(x.Substring(0, x.Length - 1), StringComparison.InvariantCultureIgnoreCase));
         }
 
