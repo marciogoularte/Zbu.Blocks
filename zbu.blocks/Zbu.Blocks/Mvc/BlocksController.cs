@@ -69,9 +69,9 @@ namespace Zbu.Blocks.Mvc
 
             // should we cache?
             var cachesCookie = umbraco.BusinessLogic.StateHelper.Cookies.Caches["macro"] ?? "cache";
-            var cache = cachesCookie == "ignore"
-                || rs.Cache == null
-                || (!string.IsNullOrWhiteSpace(rs.Cache.If) && !rs.Cache.GetCacheIf(rs, model.Content, null));
+            var cache = cachesCookie != "ignore"
+                && rs.Cache != null
+                && rs.Cache.GetCacheIf(rs, model.Content, null);
 
             return cache
                 ? Renderer.ViewWithCache(ControllerContext, rs, m, cachesCookie == "refresh")

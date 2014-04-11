@@ -94,7 +94,7 @@ namespace Zbu.Blocks.Mvc
             // bypass cache
             if (cachesCookie == "ignore" 
                 || block.Cache == null 
-                || (!string.IsNullOrWhiteSpace(block.Cache.If) && !block.Cache.GetCacheIf(block, blockModel.Content, viewData)))
+                || block.Cache.GetCacheIf(block, blockModel.Content, viewData) == false)
                 return Renderer.BlockPartial(helper, block, blockModel, viewData);
 
             var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request.QueryString, viewData);
@@ -200,9 +200,10 @@ namespace Zbu.Blocks.Mvc
                 });
             }
 
-            if (!string.IsNullOrWhiteSpace(cache.ByCustom))
+            var custom = cache.GetCacheCustom(block, content, viewData);
+            if (!string.IsNullOrWhiteSpace(custom))
             {
-                key += "__x:" + cache.GetCacheCustom(block, content, viewData);
+                key += "__x:" + custom;
             }
 
             return key.ToLowerInvariant();
