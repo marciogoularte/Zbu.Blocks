@@ -18,6 +18,7 @@ namespace Zbu.Blocks
         // data dictionary uses case-insensitive keys
         public IDictionary<string, object> Data { get; private set; }
         public IPublishedContent Fragment { get; set; }
+        public CacheProfile Cache { get; set; }
 
         public void MergeData(IEnumerable<KeyValuePair<string, object>> data)
         {

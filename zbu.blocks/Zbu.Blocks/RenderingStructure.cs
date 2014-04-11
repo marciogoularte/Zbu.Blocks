@@ -16,9 +16,10 @@ namespace Zbu.Blocks
         /// <param name="source">The structure source.</param>
         /// <param name="blocks">The structure blocks.</param>
         /// <param name="data">The structure data dictionary (using case-insensitive keys).</param>
+        /// <param name="cache">The cache paramters.</param>
         /// <remarks>The structure data can be null.</remarks>
-        public RenderingStructure(string source, IEnumerable<RenderingBlock> blocks, IDictionary<string, object> data)
-            : base(null, source, blocks, data, null)
+        public RenderingStructure(string source, IEnumerable<RenderingBlock> blocks, IDictionary<string, object> data, CacheProfile cache)
+            : base(null, source, blocks, data, null, cache)
         {
             //Source = source;
             //Blocks = new RenderingBlockCollection(blocks);
@@ -132,6 +133,10 @@ namespace Zbu.Blocks
                     .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) // pick the first that's not empty
                          ?? "default"; // if everything fails then fall back to "default"
 
+            // walk up the structures looking for the first non-null cache info
+            var wcache = structureDataValues.FirstOrDefault(x => x.Item.Cache != null);
+            var cache = wcache == null ? null : wcache.Item.Cache;
+
             // recursively get the blocks
             var blocks = GetTempFromData(blockDataValues); // bottom-up -> top-bottom
 
@@ -142,7 +147,7 @@ namespace Zbu.Blocks
                 foreach (var kvp in structureDataValue.Item.Data)
                     data[kvp.Key] = kvp.Value;
 
-            return new RenderingStructure(source, blocks.Select(GetRenderingFromTemp), data.Count == 0 ? null : data);
+            return new RenderingStructure(source, blocks.Select(GetRenderingFromTemp), data.Count == 0 ? null : data, cache);
         }
 
         // input is a collection of block data values
@@ -175,7 +180,8 @@ namespace Zbu.Blocks
                     Name = blockDataValue.Name,
                     Source = blockDataValue.Source,
                     Index = blockDataValue.Index,
-                    Fragment = blockDataValue.Fragment
+                    Fragment = blockDataValue.Fragment,
+                    Cache = blockDataValue.Cache
                 };
                 t.MergeData(blockDataValue.Data);
                 namedTempBlocks[blockDataValue.Name] = t;
@@ -207,6 +213,8 @@ namespace Zbu.Blocks
                             throw new StructureException("Only the top-most named block can define a type.");
                         if (blockDataValue.Index != BlockDataValue.DefaultIndex)
                             throw new StructureException("Only the top-most named block can set an index.");
+                        if (blockDataValue.Cache != null)
+                            throw new StructureException("Only the top-most named block can define cache parameters.");
 
                         // merge data - won't do anything if null
                         namedTempBlock.MergeData(blockDataValue.Data);
@@ -245,6 +253,7 @@ namespace Zbu.Blocks
                         Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
                         Index = blockDataValue.Index,
                         Fragment = blockDataValue.Fragment,
+                        Cache = blockDataValue.Cache,
 
                         // there's nothing to merge so all blocks are defined at the same level
                         // block.Item.Blocks is top-bottom, must reverse
@@ -280,7 +289,7 @@ namespace Zbu.Blocks
         private static RenderingBlock GetRenderingFromTemp(TempBlock b)
         {
             var renderingBlocks = b.Blocks.Select(GetRenderingFromTemp); // recurse
-            return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.Data, b.Fragment);
+            return new RenderingBlock(b.Name, b.Source, renderingBlocks, b.Data, b.Fragment, b.Cache);
         }
 
         #endregion

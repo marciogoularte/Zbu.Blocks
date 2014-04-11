@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace Zbu.Blocks.Tests
@@ -31,6 +32,7 @@ namespace Zbu.Blocks.Tests
                     + "\"Contexts\":[],"
                     + "\"ContentTypes\":[],"
                     + "\"ContentTypesNegate\":false,"
+                    + "\"Cache\":null,"
                     + "\"Blocks\":[]"
                 + "}", json);
         }
@@ -64,6 +66,7 @@ namespace Zbu.Blocks.Tests
                     + "\"Data\":{\"value\":1234},"
                     + "\"FragmentType\":null,"
                     + "\"FragmentData\":null,"
+                    + "\"Cache\":null,"
                     + "\"Blocks\":[]"
                 + "}", json);
         }
@@ -273,6 +276,131 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual(e, JsonSerializer.StripComments(s));
             var x = JsonSerializer.Instance.DeserializeNoComments<object>(e);
             var y = JsonSerializer.Instance.Deserialize<object>(s);
+        }
+
+        [Test]
+        public void CustomConverter()
+        {
+            var json = JsonSerializer.Instance;
+
+            var o1 = new TestObject {Value = "hello", Custom = new CustomObject {Value = "world"}};
+            var j1 = json.Serialize(o1);
+            Assert.AreEqual("{\"Value\":\"xhello\",\"Custom\":{\"IsSomething\":false,\"Value\":\"world\"}}", j1);
+            var o2 = json.Deserialize<TestObject>(j1);
+            Assert.AreEqual("hello", o2.Value);
+            Assert.IsNotNull(o2.Custom);
+            Assert.IsFalse(o2.Custom.IsSomething);
+            Assert.AreEqual("world", o2.Custom.Value);
+
+            var o3 = json.Deserialize<TestObject>("{\"Value\":\"xhello\",\"Custom\":null}");
+            Assert.IsNull(o3.Custom);
+            var o4 = json.Deserialize<TestObject>("{\"Value\":\"xhello\",\"Custom\":\"boom\"}");
+            Assert.IsNotNull(o4.Custom);
+            Assert.IsTrue(o4.Custom.IsSomething);
+            Assert.AreEqual("boom", o4.Custom.Value);
+        }
+
+        [Test]
+        public void Constructor()
+        {
+            var json = JsonSerializer.Instance;
+            var o = json.Deserialize<ObjectWithConstructor>("{\"Value\":\"hello\"}");
+            Assert.AreEqual("hello", o.Value);
+            Assert.AreEqual("pp", o.Orig);
+
+            o = json.Deserialize<ObjectWithConstructor>("{\"Profile\":\"hello\"}");
+            Assert.AreEqual("profiled", o.Value);
+            Assert.AreEqual("pp", o.Orig);
+
+            o = json.Deserialize<ObjectWithConstructor>("{\"Profile\":\"hello\",\"Value\":\"hello\"}");
+            Assert.AreEqual("hello", o.Value);
+            Assert.AreEqual("pp", o.Orig);
+        }
+
+        public class TestObject
+        {
+            [JsonConverter(typeof(CustomStringConverter))]
+            public string Value { get; set; }
+
+            [JsonConverter(typeof(CustomObjectConverter))]
+            public CustomObject Custom { get; set; }
+        }
+
+        public class CustomObject
+        {
+            public bool IsSomething { get; set; }
+            public string Value { get; set; }
+        }
+
+        public class ObjectWithConstructor
+        {
+            public string Value { get; set; }
+            public string Orig { get; set; }
+
+
+            public ObjectWithConstructor()
+            {
+                Orig = "np";
+            }
+
+            [JsonConstructor]
+            internal ObjectWithConstructor(string profile)
+            {
+                Orig = "pp";
+                if (profile != null) Value = "profiled";
+            }
+        }
+
+        public class CustomObjectConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof (CustomObject).IsAssignableFrom(objectType);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+            {
+                switch (reader.TokenType)
+                {
+                    case JsonToken.Null:
+                        return null;
+                    case JsonToken.String:
+                        return new CustomObject {IsSomething = true, Value = (string)serializer.Deserialize(reader, typeof(string))};
+                    default: // just in case...
+                    case JsonToken.StartObject:
+                        return serializer.Deserialize(reader, objectType);
+                }
+            }
+
+            public override bool CanWrite
+            {
+                get { return false; }
+            }
+        }
+
+        public class CustomStringConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof (string).IsAssignableFrom(objectType);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+            {
+                serializer.Serialize(writer, "x" + (string)value);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+            {
+                var s = (string)serializer.Deserialize(reader, objectType);
+                if (s != null) s = s.Substring(1);
+                return s;
+            }
         }
     }
 }

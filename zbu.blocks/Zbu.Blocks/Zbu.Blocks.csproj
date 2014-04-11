@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="businesslogic, Version=1.0.5190.23044, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Eurovia\w310\src\Dependencies\Umbraco\Umbraco.v6\bin\businesslogic.dll</HintPath>
+    </Reference>
     <Reference Include="cms">
       <HintPath>..\..\..\..\src\build\_BuildOutput\WebApp\bin\cms.dll</HintPath>
     </Reference>
@@ -41,8 +45,10 @@
       <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
@@ -59,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockDataValue.cs" />
+    <Compile Include="CacheProfile.cs" />
+    <Compile Include="CacheProfileConverter.cs" />
     <Compile Include="Mvc\BlocksControllerFactory.cs" />
     <Compile Include="Mvc\BlockModelTypeConverter.cs" />
     <Compile Include="Mvc\HtmlHelperExtensions.cs" />
@@ -70,6 +78,7 @@
     <Compile Include="DataType\StructuresDataType.cs" />
     <Compile Include="DataType\StructuresEditor.cs" />
     <Compile Include="DataType\StructuresPrevalueEditor.cs" />
+    <Compile Include="Mvc\Renderer.cs" />
     <Compile Include="StructureException.cs" />
     <Compile Include="TempBlock.cs" />
     <Compile Include="JsonSerializer.cs" />

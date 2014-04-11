@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Web.Mvc;
+using Umbraco.Core.Models;
 using Umbraco.Web;
 using Umbraco.Web.Models;
 using Umbraco.Web.Mvc;
@@ -65,8 +67,15 @@ namespace Zbu.Blocks.Mvc
             var m = new BlockModel(model.Content, rs, model.CurrentCulture);
             //var m = CreateModel(model.Content, rs, model.CurrentCulture);
 
-            //return CurrentTemplate(m);
-            return View(rs.Source, m);
+            // should we cache?
+            var cachesCookie = umbraco.BusinessLogic.StateHelper.Cookies.Caches["macro"] ?? "cache";
+            var cache = cachesCookie == "ignore"
+                || rs.Cache == null
+                || (!string.IsNullOrWhiteSpace(rs.Cache.If) && !rs.Cache.GetCacheIf(rs, model.Content, null));
+
+            return cache
+                ? Renderer.ViewWithCache(ControllerContext, rs, m, cachesCookie == "refresh")
+                : View(rs.Source, m);
         }
 
         //private static BlockModel<T> CreateModel<T>(T content, RenderingBlock rs, CultureInfo culture)
@@ -98,6 +107,10 @@ namespace Zbu.Blocks.Mvc
                     _getContext = value;
                 }
             }
+
+            public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, bool>> CacheIf { get { return CacheProfile.CacheIf; } }
+            public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom { get { return CacheProfile.CacheCustom; } }
+            public static Dictionary<string, CacheProfile> CacheProfiles { get { return CacheProfile.Profiles; } }
         }
 
         private static void EnsureWriteable()

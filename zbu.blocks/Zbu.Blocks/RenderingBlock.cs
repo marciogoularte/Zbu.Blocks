@@ -20,15 +20,17 @@ namespace Zbu.Blocks
         /// <param name="blocks">The block inner blocks.</param>
         /// <param name="data">The block data dictionary (using case-insensitive keys).</param>
         /// <param name="fragment">The block content fragment.</param>
+        /// <param name="cache">The cache parameters.</param>
         /// <remarks>The block data can be null.</remarks>
         public RenderingBlock(string name, string source, IEnumerable<RenderingBlock> blocks, 
-            IDictionary<string, object> data, IPublishedContent fragment)
+            IDictionary<string, object> data, IPublishedContent fragment, CacheProfile cache)
         {
             Name = name;
             Source = source;
             Blocks = new RenderingBlockCollection(blocks);
             Data = data;
             Fragment = fragment;
+            Cache = cache;
         }
 
         /// <summary>
@@ -57,6 +59,11 @@ namespace Zbu.Blocks
         /// Gets or sets the block content fragment.
         /// </summary>
         public IPublishedContent Fragment { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the cache parameters.
+        /// </summary>
+        public CacheProfile Cache { get; private set; }
 
         public T GetData<T>(string key)
         {

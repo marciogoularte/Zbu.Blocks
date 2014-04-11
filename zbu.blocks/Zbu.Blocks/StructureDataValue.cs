@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace Zbu.Blocks
 {
@@ -30,6 +31,7 @@ namespace Zbu.Blocks
             Contexts = NoContexts;
             ContentTypes = NoContentTypes;
             ContentTypesNegate = false;
+            Cache = null;
         }
 
         /// <summary>
@@ -85,6 +87,12 @@ namespace Zbu.Blocks
         /// Gets or sets a value indicating whether to negate the content types filter.
         /// </summary>
         public bool ContentTypesNegate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cache parameters.
+        /// </summary>
+        [JsonConverter(typeof(CacheProfileConverter))]
+        public CacheProfile Cache { get; set; }
 
         /// <summary>
         /// Gets or sets the blocks collection of the structure.

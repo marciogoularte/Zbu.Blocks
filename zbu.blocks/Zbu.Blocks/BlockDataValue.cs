@@ -33,6 +33,7 @@ namespace Zbu.Blocks
             Blocks = NoBlocks;
             Data = null;
             FragmentData = null;
+            Cache = null;
         }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace Zbu.Blocks
             Blocks = typeBlock.Blocks;
             Data = typeBlock.Data;
             FragmentData = typeBlock.FragmentData;
+            Cache = typeBlock.Cache;
         }
 
         /// <summary>
@@ -152,6 +154,12 @@ namespace Zbu.Blocks
         /// <remarks>Must invoke <c>EnsureFragment</c> before the fragment exists. Can be null.</remarks>
         [JsonIgnore]
         public IPublishedContent Fragment { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the cache parameters.
+        /// </summary>
+        [JsonConverter(typeof (CacheProfileConverter))]
+        public CacheProfile Cache { get; set; }
 
         /// <summary>
         /// Gets or sets the inner blocks collection of the block.
