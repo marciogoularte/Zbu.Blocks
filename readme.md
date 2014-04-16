@@ -1,5 +1,5 @@
-ZpqrtBnk Umbraco Blocks
-Copyright (C) Pilotine - ZpqrtBnk 2013-2014
+ZpqrtBnk Umbraco Blocks  
+Copyright (C) Pilotine - ZpqrtBnk 2013-2014  
 Distributed under the MIT license  
 
 
