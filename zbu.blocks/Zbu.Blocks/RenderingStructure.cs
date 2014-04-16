@@ -164,17 +164,27 @@ namespace Zbu.Blocks
             var blockDataValuesArray = blockDataValues.ToArray(); // iterate only once
 
             // find named blocks
-            // because we're iterating bottom-top, this will get the top-most block for each name
             // the name is case-insensitive
-            var namedBlockDataValues = new Dictionary<string, BlockDataValue>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var b in blockDataValuesArray.Where(x => x.Item.IsNamed).Select(x => x.Item))
-                namedBlockDataValues[b.Name] = b;
+            var namedBlockDataValueDictionary = new Dictionary<string, List<WithLevel<BlockDataValue>>>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var b in blockDataValuesArray.Where(x => x.Item.IsNamed))
+            {
+                List<WithLevel<BlockDataValue>> namedBlockDataValues;
+                if (!namedBlockDataValueDictionary.TryGetValue(b.Item.Name, out namedBlockDataValues)) 
+                    namedBlockDataValues = namedBlockDataValueDictionary[b.Item.Name] = new List<WithLevel<BlockDataValue>>();
+                namedBlockDataValues.Add(b);
+            }
+            foreach (var kvp in namedBlockDataValueDictionary)
+                kvp.Value.Reverse(); // top-to-bottom
 
             // create the temporary named blocks from the top-most block data value
             // whether bottom named blocks can change any of these settings is an option
             var namedTempBlocks = new Dictionary<string, TempBlock>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var blockDataValue in namedBlockDataValues.Values)
+
+            foreach (var namedBlockDataValues in namedBlockDataValueDictionary.Values)
             {
+                var blockDataValue = namedBlockDataValues[0].Item;
+                var blockLevel = namedBlockDataValues[0].Level;
+
                 var t = new TempBlock
                 {
                     Name = blockDataValue.Name,
@@ -185,6 +195,58 @@ namespace Zbu.Blocks
                 };
                 t.MergeData(blockDataValue.Data);
                 namedTempBlocks[blockDataValue.Name] = t;
+
+                t.BlockDataValues.AddRange(blockDataValue.Blocks
+                    .Where(b => b.MinLevel <= blockLevel && b.MaxLevel >= blockLevel)
+                    .Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
+
+                foreach (var namedOtherDataValue in namedBlockDataValues.Skip(1)) // top-bottom
+                {
+                    var otherDataValue = namedOtherDataValue.Item;
+                    var otherLevel = namedOtherDataValue.Level;
+
+                    if (otherDataValue.IsKill)
+                    {
+                        t.Killed = true;
+                        break; // no need to continue
+                    }
+
+                    // set source if not already set
+                    if (!string.IsNullOrWhiteSpace(otherDataValue.Source))
+                    {
+                        if (!string.IsNullOrWhiteSpace(t.Source))
+                            throw new StructureException("Cannot change source of a named blocks once it has been set.");
+                        t.Source = otherDataValue.Source;
+                    }
+
+                    // index cannot change
+                    if (otherDataValue.Index != BlockDataValue.DefaultIndex)
+                        throw new StructureException("Only the top-most named block can define an index.");
+
+                    // merge data
+                    t.MergeData(otherDataValue.Data);
+
+                    // override fragment
+                    if (otherDataValue.Fragment != null)
+                        t.Fragment = otherDataValue.Fragment;
+
+                    // set cache if not already set
+                    if (otherDataValue.Cache != null)
+                    {
+                        if (t.Cache != null)
+                            throw new StructureException("Cannot change cache of a named blocks once it has been set.");
+                        t.Cache = otherDataValue.Cache;
+                    }
+
+                    if (otherDataValue.IsReset)
+                        t.BlockDataValues.Clear();
+
+                    t.BlockDataValues.AddRange(otherDataValue.Blocks
+                        .Where(b => b.MinLevel <= otherLevel && b.MaxLevel >= otherLevel)
+                        .Select(x => new WithLevel<BlockDataValue>(x, otherLevel)));
+                }
+
+                t.BlockDataValues.Reverse();
             }
 
             // build the temporary blocks list
@@ -199,46 +261,8 @@ namespace Zbu.Blocks
                 if (namedTempBlocks.TryGetValue(blockDataValue.Name, out namedTempBlock))
                 {
                     // named block
-                    // don't create another temp block but collapse into the existing one
-
-                    var isTopMost = namedBlockDataValues.ContainsValue(blockDataValue);
-
-                    // non top-most named blocks have some restrictions
-                    if (!isTopMost)
-                    {
-                        // only the top-most named block can set these values
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.Source))
-                            throw new StructureException("Only the top-most named block can define a source.");
-                        if (!string.IsNullOrWhiteSpace(blockDataValue.Type))
-                            throw new StructureException("Only the top-most named block can define a type.");
-                        if (blockDataValue.Index != BlockDataValue.DefaultIndex)
-                            throw new StructureException("Only the top-most named block can set an index.");
-                        if (blockDataValue.Cache != null)
-                            throw new StructureException("Only the top-most named block can define cache parameters.");
-
-                        // merge data - won't do anything if null
-                        namedTempBlock.MergeData(blockDataValue.Data);
-
-                        // fully override fragment
-                        if (blockDataValue.Fragment != null)
-                            namedTempBlock.Fragment = blockDataValue.Fragment;
-                    }
-
-                    // add our own blocks to the existing temp block
-                    if (!namedTempBlock.Locked)
-                        namedTempBlock.BlockDataValues.AddRange(blockDataValue.Blocks
-                            .Where(b => b.MinLevel <= blockLevel && b.MaxLevel >= blockLevel)
-                            .Select(x => new WithLevel<BlockDataValue>(x, blockLevel)));
-
-                    // if reset, lock temp block blocks collection
-                    if (blockDataValue.IsReset)
-                        namedTempBlock.Locked = true;
-
-                    // if kill, kill temp block so it's not inserted
-                    if (blockDataValue.IsKill)
-                        namedTempBlock.Killed = namedTempBlock.Locked = true;
-
                     // insert temp block at the position of the top-most occurence
+                    var isTopMost = block == namedBlockDataValueDictionary[blockDataValue.Name][0];
                     if (isTopMost && !namedTempBlock.Killed)
                         tempBlocks.Add(namedTempBlock);
                 }

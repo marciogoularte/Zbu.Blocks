@@ -11,7 +11,6 @@ namespace Zbu.Blocks
     {
         public string Name { get; set; }
 
-        public bool Locked { get; set; }
         public bool Killed { get; set; }
         public int Index { get; set; }
 
@@ -27,7 +26,7 @@ namespace Zbu.Blocks
             if (Data == null)
                 Data = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var kvp in data)
-                Data.Add(kvp);
+                Data[kvp.Key] = kvp.Value;
         }
 
         // we're going to add to it

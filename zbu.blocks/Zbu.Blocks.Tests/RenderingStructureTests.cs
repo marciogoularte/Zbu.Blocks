@@ -1168,5 +1168,55 @@ namespace Zbu.Blocks.Tests
             Assert.AreEqual("b2", s.Blocks[0].Source);
             Assert.AreEqual("b1", s.Blocks[1].Source);
         }
+
+        [Test]
+        public void NamedBlocsIssues()
+        {
+            const string json =
+                "["
+                    + "{"
+                        + "\"Name\":\"test\","
+                        + "\"Data\": { \"val\":1},"
+                        + "\"Blocks\" : ["
+                            + "{"
+                                + "\"Name\":\"block\","
+                                + "\"Data\": { \"val\":1}"
+                            + "}"
+                        + "]"
+                    + "},"
+                    + "{"
+                        + "\"Name\":\"test\","
+                        + "\"Data\": { \"val\":2 },"
+                        + "\"Blocks\" : ["
+                            + "{"
+                                + "\"Name\":\"block\","
+                                + "\"Data\": { \"val\":2}"
+                            + "}"
+                        + "]"
+                    + "},"
+                    + "{"
+                        + "\"Name\":\"test\","
+                        + "\"Data\": { \"val\":3 },"
+                        + "\"Blocks\" : ["
+                            + "{"
+                                + "\"Name\":\"block\","
+                                + "\"Data\": { \"val\":3}"
+                            + "}"
+                        + "]"
+                    + "}"
+                + "]";
+
+            var p = new PublishedContent
+            {
+                Structures = JsonSerializer.Instance.Deserialize<StructureDataValue[]>(json)
+            };
+
+            var s = RenderingStructure.Compute(p, x => ((PublishedContent)x).Structures);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("test", s.Source);
+            Assert.AreEqual(3, s.GetData<Int64>("val"));
+            Assert.AreEqual(1, s.Blocks.Count);
+            Assert.AreEqual(3, s.Blocks[0].GetData<Int64>("val"));
+        }
     }
 }
