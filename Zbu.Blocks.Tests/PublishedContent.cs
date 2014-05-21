@@ -54,12 +54,12 @@ namespace Zbu.Blocks.Tests
             throw new NotImplementedException();
         }
 
-        public IPublishedProperty GetProperty(string alias, bool recurse)
+        public IPublishedContentProperty GetProperty(string alias, bool recurse)
         {
             throw new NotImplementedException();
         }
 
-        public IPublishedProperty GetProperty(string alias)
+        public IPublishedContentProperty GetProperty(string alias)
         {
             throw new NotImplementedException();
         }
@@ -100,7 +100,7 @@ namespace Zbu.Blocks.Tests
             get { throw new NotImplementedException(); }
         }
 
-        public ICollection<IPublishedProperty> Properties
+        public ICollection<IPublishedContentProperty> Properties
         {
             get { throw new NotImplementedException(); }
         }
