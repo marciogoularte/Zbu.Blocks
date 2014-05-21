@@ -170,14 +170,18 @@ namespace Zbu.Blocks
         // is invoked by the converter after the whole structure property has been parsed
         public void EnsureFragments(bool preview)
         {
-            if (FragmentData != null && FragmentData.Count > 0)
-            {
-                Fragment = UmbracoContext.Current.ContentCache.InnerCache.CreateFragment(
-                    FragmentType, FragmentData, preview, true);
-            }
+            // FIXME - DISABLED
+            // FIXME - Fragments are not native in Umbraco
+            // FIXME - Need to re-think what we want to do with them...
 
-            foreach (var block in Blocks)
-                block.EnsureFragments(preview);
+            //if (FragmentData != null && FragmentData.Count > 0)
+            //{
+            //    Fragment = UmbracoContext.Current.ContentCache.InnerCache.CreateFragment(
+            //        FragmentType, FragmentData, preview, true);
+            //}
+
+            //foreach (var block in Blocks)
+            //    block.EnsureFragments(preview);
         }
 
         private static readonly IDictionary<string, BlockDataValue> Types 
