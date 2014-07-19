@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+	<metadata minClientVersion="2.8.1">
+		<id>Zbu.Blocks</id>
+		<version>$version$</version>
+		<title>ZpqrtBnk Umbraco Blocks</title>
+		<authors>Pilotine - ZpqrtBnk</authors>
+		<owners>Pilotine - ZpqrtBnk</owners>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>ZpqrtBnk Umbraco Blocks.</description>
+		<copyright>Copyright © Pilotine - ZpqrtBnk 2013-2014</copyright>
+		<dependencies>
+		</dependencies>
+	</metadata>
+	<files>
+    <!-- our dlls -->
+    <file src="..\..\bin\Release\Zbu.Blocks.dll" target="lib\Zbu.Blocks.dll" />
+
+    <!-- content // we don't have any -->
+		
+    <!-- post-install script // we don't have one -->
+    <!--
+		<file src="tools\install.ps1" target="tools\install.ps1" />
+		-->
+    
+    <!-- transforms // we don't have any -->
+
+  </files>
+</package>
