@@ -19,7 +19,7 @@ namespace Zbu.Blocks.Mvc
 {
     class Renderer
     {
-        public static MvcHtmlString BlockPartial(HtmlHelper helper, RenderingBlock block, BlockModel blockModel, ViewDataDictionary viewData)
+        private static MvcHtmlString BlockPartial(HtmlHelper helper, RenderingBlock block, BlockModel blockModel, ViewDataDictionary viewData)
         {
             var blockHtml = viewData == null
                 ? helper.Partial(block.Source, blockModel)
@@ -132,8 +132,11 @@ namespace Zbu.Blocks.Mvc
             return result;
         }
 
-        public static string ViewContent(ControllerContext context, RenderingBlock block, BlockModel model)
+        private static string ViewContent(ControllerContext context, RenderingBlock block, BlockModel model)
         {
+            // this basically repeats what Controller.View is doing
+            // but Controller.View is protected so we cannot use it here
+
             var viewEngineResult = ViewEngines.Engines.FindView(context, block.Source, null);
             if (viewEngineResult == null)
                 throw new Exception("Null ViewEngineResult.");
@@ -168,7 +171,7 @@ namespace Zbu.Blocks.Mvc
             return text;
         }
 
-        public static string GetCacheKey(RenderingBlock block, IPublishedContent content, System.Collections.Specialized.NameValueCollection querystring, ViewDataDictionary viewData)
+        private static string GetCacheKey(RenderingBlock block, IPublishedContent content, System.Collections.Specialized.NameValueCollection querystring, ViewDataDictionary viewData)
         {
             var key = "Zbu.Blocks__" + block.Source;
             var cache = block.Cache;
