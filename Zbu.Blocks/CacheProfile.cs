@@ -14,7 +14,7 @@ namespace Zbu.Blocks
         internal string Profile { get; set; }
 
         public int Duration { get; set; }
-        public string If { get; set; }
+        public string Mode { get; set; }
 
         public bool ByPage { get; set; }
         public bool ByMember { get; set; }
@@ -25,11 +25,11 @@ namespace Zbu.Blocks
         public string ByCustom { get; set; }
 
         [JsonIgnore]
-        public Func<RenderingBlock, IPublishedContent, ViewDataDictionary, bool> IfFunc { get; set; }
+        public Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode> ModeFunc { get; set; }
         [JsonIgnore]
         public Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string> CustomFunc { get; set; }
 
-        internal static readonly Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, bool>> CacheIf = new Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, bool>>();
+        internal static readonly Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode>> CacheMode = new Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode>>();
         internal static readonly Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom = new Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>>();
         internal static readonly Dictionary<string, CacheProfile> Profiles = new Dictionary<string, CacheProfile>();
 
@@ -50,7 +50,7 @@ namespace Zbu.Blocks
         {
             // do not copy profile!
             Duration = cache.Duration;
-            If = cache.If;
+            Mode = cache.Mode;
             ByPage = cache.ByPage;
             ByMember = cache.ByMember;
             ByConst = cache.ByConst;
@@ -58,15 +58,15 @@ namespace Zbu.Blocks
             ByProperty = cache.ByProperty;
             ByCustom = cache.ByCustom;
 
-            IfFunc = cache.IfFunc;
+            ModeFunc = cache.ModeFunc;
             CustomFunc = cache.CustomFunc;
         }
 
-        internal bool GetCacheIf(RenderingBlock block, IPublishedContent content, ViewDataDictionary viewData)
+        internal CacheMode GetCacheMode(RenderingBlock block, IPublishedContent content, ViewDataDictionary viewData)
         {
-            var ifFunc = IfFunc;
-            if (!string.IsNullOrWhiteSpace(If) && !CacheIf.TryGetValue(If, out ifFunc)) return false;
-            return ifFunc == null || ifFunc(block, content, viewData);
+            var modeFunc = ModeFunc;
+            if (!string.IsNullOrWhiteSpace(Mode) && !CacheMode.TryGetValue(Mode, out modeFunc)) return Blocks.CacheMode.Ignore;
+            return modeFunc == null ? Blocks.CacheMode.Ignore : modeFunc(block, content, viewData);
         }
 
         internal string GetCacheCustom(RenderingBlock block, IPublishedContent content, ViewDataDictionary viewData)

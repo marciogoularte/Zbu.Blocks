@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using umbraco.cms.businesslogic.datatype;
 using umbraco.interfaces;
 
+#if UMBRACO_6
 namespace Zbu.Blocks.DataType
 {
     public class StructuresDataType : BaseDataType, IDataType
@@ -48,3 +49,4 @@ namespace Zbu.Blocks.DataType
         }
     }
 }
+#endif

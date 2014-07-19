@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Web.Mvc;
 using Umbraco.Core.Models;
 using Umbraco.Web;
@@ -68,14 +67,13 @@ namespace Zbu.Blocks.Mvc
             //var m = CreateModel(model.Content, rs, model.CurrentCulture);
 
             // should we cache?
-            var cachesCookie = umbraco.BusinessLogic.StateHelper.Cookies.Caches["macro"] ?? "cache";
-            var cache = cachesCookie != "ignore"
-                && rs.Cache != null
-                && rs.Cache.GetCacheIf(rs, model.Content, null);
+            var cacheMode = rs.Cache == null
+                ? CacheMode.Ignore
+                : rs.Cache.GetCacheMode(rs, model.Content, null);
 
-            return cache
-                ? Renderer.ViewWithCache(ControllerContext, rs, m, cachesCookie == "refresh")
-                : View(rs.Source, m);
+            return cacheMode == CacheMode.Ignore
+                ? View(rs.Source, m)
+                : Renderer.ViewWithCache(ControllerContext, rs, m, cacheMode == CacheMode.Refresh);
         }
 
         //private static BlockModel<T> CreateModel<T>(T content, RenderingBlock rs, CultureInfo culture)
@@ -108,7 +106,7 @@ namespace Zbu.Blocks.Mvc
                 }
             }
 
-            public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, bool>> CacheIf { get { return CacheProfile.CacheIf; } }
+            public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode>> CacheMode { get { return CacheProfile.CacheMode; } }
             public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom { get { return CacheProfile.CacheCustom; } }
             public static Dictionary<string, CacheProfile> CacheProfiles { get { return CacheProfile.Profiles; } }
         }

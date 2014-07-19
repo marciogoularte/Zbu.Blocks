@@ -1,0 +1,13 @@
+﻿{
+    propertyEditors: [      
+        {
+            alias: "Zbu.Blocks.PropertyEditors.Structures",
+            name: "Structures Editor",
+            editor: {
+                view: "~/App_Plugins/Zbu.Blocks/structures.html",
+                hideLabel: true,
+                valueType: "TEXT"
+            }
+        }
+    ]
+}

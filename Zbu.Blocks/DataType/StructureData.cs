@@ -1,6 +1,7 @@
 ﻿using System;
 using umbraco.cms.businesslogic.datatype;
 
+#if UMBRACO_6
 namespace Zbu.Blocks.DataType
 {
     // in our case data is just a string and we don't need no custom data
@@ -25,3 +26,4 @@ namespace Zbu.Blocks.DataType
         }
     }
 }
+#endif

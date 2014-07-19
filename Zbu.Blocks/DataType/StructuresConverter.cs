@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Umbraco.Core.Models;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Models.PublishedContent;
+using Zbu.Blocks.PropertyEditors;
 
 namespace Zbu.Blocks.DataType
 {
@@ -39,7 +40,11 @@ namespace Zbu.Blocks.DataType
 
         public bool IsConverter(PublishedPropertyType propertyType)
         {
+#if UMBRACO_6
             return propertyType.PropertyEditorGuid == StructuresDataType.DataTypeGuid;
+#else
+            return propertyType.PropertyEditorAlias == StructuresPropertyEditor.StructuresAlias;
+#endif
         }
     }
 }

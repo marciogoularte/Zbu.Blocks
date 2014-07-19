@@ -89,18 +89,17 @@ namespace Zbu.Blocks.Mvc
             // use a basic BlockModel and let the view deal with it
             var blockModel = new BlockModel(currentBlockModel.Content, block, currentBlockModel.CurrentCulture);
 
-            var cachesCookie = umbraco.BusinessLogic.StateHelper.Cookies.Caches["macro"] ?? "cache";
+            var cacheMode = block.Cache == null
+                ? CacheMode.Ignore
+                : block.Cache.GetCacheMode(block, blockModel.Content, viewData);
 
-            // bypass cache
-            if (cachesCookie == "ignore" 
-                || block.Cache == null 
-                || block.Cache.GetCacheIf(block, blockModel.Content, viewData) == false)
+            if (block.Cache == null || cacheMode == CacheMode.Ignore) // test null again so ReSharper is happy
                 return Renderer.BlockPartial(helper, block, blockModel, viewData);
 
             var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request.QueryString, viewData);
 
             // in order to refresh we have to flush before getting
-            if (cachesCookie == "refresh")
+            if (cacheMode == CacheMode.Refresh)
                 ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheByKeySearch(key);
 
             // render cached

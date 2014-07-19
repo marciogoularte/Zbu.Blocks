@@ -9,6 +9,7 @@ using umbraco.interfaces;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
+#if UMBRACO_6
 namespace Zbu.Blocks.DataType
 {
     public class StructuresPrevalueEditor : PlaceHolder, IDataPrevalue
@@ -118,3 +119,4 @@ namespace Zbu.Blocks.DataType
         }
     }
 }
+#endif

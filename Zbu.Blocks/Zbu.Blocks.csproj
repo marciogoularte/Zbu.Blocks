@@ -29,18 +29,64 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-U6|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug-U6\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UMBRACO_6</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-U6|AnyCPU'">
+    <OutputPath>bin\Release-U6\</OutputPath>
+    <DefineConstants>TRACE;UMBRACO_6</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="businesslogic, Version=1.0.5214.17179, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="businesslogic" Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug' ">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\businesslogic.dll</HintPath>
+      <HintPath>..\lib\umbraco\businesslogic.dll</HintPath>
     </Reference>
-    <Reference Include="cms, Version=1.0.5214.17180, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="cms" Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug' ">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\cms.dll</HintPath>
+      <HintPath>..\lib\umbraco\cms.dll</HintPath>
     </Reference>
-    <Reference Include="interfaces, Version=1.0.5214.17178, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="interfaces" Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug' ">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\interfaces.dll</HintPath>
+      <HintPath>..\lib\umbraco\interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="umbraco" Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco\umbraco.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Core" Condition=" '$(Configuration)' == 'Release' or '$(Configuration)' == 'Debug' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco\Umbraco.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="businesslogic" Condition=" '$(Configuration)' == 'Release-U6' or '$(Configuration)' == 'Debug-U6' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco-6\businesslogic.dll</HintPath>
+    </Reference>
+    <Reference Include="cms" Condition=" '$(Configuration)' == 'Release-U6' or '$(Configuration)' == 'Debug-U6' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco-6\cms.dll</HintPath>
+    </Reference>
+    <Reference Include="interfaces" Condition=" '$(Configuration)' == 'Release-U6' or '$(Configuration)' == 'Debug-U6' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco-6\interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="umbraco" Condition=" '$(Configuration)' == 'Release-U6' or '$(Configuration)' == 'Debug-U6' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco-6\umbraco.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Core" Condition=" '$(Configuration)' == 'Release-U6' or '$(Configuration)' == 'Debug-U6' ">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\umbraco-6\Umbraco.Core.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -57,17 +103,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="umbraco, Version=1.0.5214.17182, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\umbraco.dll</HintPath>
-    </Reference>
-    <Reference Include="Umbraco.Core, Version=1.0.5214.17178, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Umbraco.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockDataValue.cs" />
+    <Compile Include="CacheMode.cs" />
     <Compile Include="CacheProfile.cs" />
     <Compile Include="CacheProfileConverter.cs" />
     <Compile Include="Mvc\BlocksControllerFactory.cs" />
@@ -82,6 +121,7 @@
     <Compile Include="DataType\StructuresEditor.cs" />
     <Compile Include="DataType\StructuresPrevalueEditor.cs" />
     <Compile Include="Mvc\Renderer.cs" />
+    <Compile Include="PropertyEditors\StructuresPropertyEditor.cs" />
     <Compile Include="StructureException.cs" />
     <Compile Include="TempBlock.cs" />
     <Compile Include="JsonSerializer.cs" />
@@ -95,10 +135,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="PropertyEditors\Client\package.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Notes.txt" />
+    <Content Include="PropertyEditors\Client\structures.html" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

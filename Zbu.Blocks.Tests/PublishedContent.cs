@@ -54,12 +54,20 @@ namespace Zbu.Blocks.Tests
             throw new NotImplementedException();
         }
 
+#if UMBRACO_6
+        public IPublishedContentProperty GetProperty(string alias, bool recurse)
+#else
         public IPublishedProperty GetProperty(string alias, bool recurse)
+#endif
         {
             throw new NotImplementedException();
         }
 
+#if UMBRACO_6
+        public IPublishedContentProperty GetProperty(string alias)
+#else
         public IPublishedProperty GetProperty(string alias)
+#endif
         {
             throw new NotImplementedException();
         }
@@ -100,7 +108,11 @@ namespace Zbu.Blocks.Tests
             get { throw new NotImplementedException(); }
         }
 
+#if UMBRACO_6
+        public ICollection<IPublishedContentProperty> Properties
+#else
         public ICollection<IPublishedProperty> Properties
+#endif
         {
             get { throw new NotImplementedException(); }
         }
