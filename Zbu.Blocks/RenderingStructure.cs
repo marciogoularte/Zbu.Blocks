@@ -273,8 +273,8 @@ namespace Zbu.Blocks
                     // just add a new temp block
                     var t = new TempBlock
                     {
-                        Name = blockDataValue.Name,
-                        Source = string.IsNullOrWhiteSpace(blockDataValue.Source) ? blockDataValue.Name : blockDataValue.Source,
+                        Name = string.Empty, // not a named block
+                        Source = blockDataValue.Source,
                         Index = blockDataValue.Index,
                         Fragment = blockDataValue.Fragment,
                         Cache = blockDataValue.Cache,
@@ -293,6 +293,7 @@ namespace Zbu.Blocks
             // process named blocks source & inner blocks
             foreach (var tempBlock in namedTempBlocks.Values)
             {
+                // for a named block, source may be missing and then we use the name as a source
                 tempBlock.Source = string.IsNullOrWhiteSpace(tempBlock.Source) ? tempBlock.Name : tempBlock.Source;
 
                 // tempBlock is a named block so tempBlock.BlockDatas is already bottom-top ordered
