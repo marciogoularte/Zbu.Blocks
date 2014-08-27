@@ -19,6 +19,13 @@ namespace Zbu.Blocks.DataType
     {
         public object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
         {
+            // data == source so we can return json to xpath
+            return source;
+        }
+
+        public object ConvertSourceToObject(PublishedPropertyType propertyType, object source, bool preview)
+        {
+            // object == deserialized source
             var json = source.ToString();
             if (string.IsNullOrWhiteSpace(json)) return null;
 
@@ -28,14 +35,11 @@ namespace Zbu.Blocks.DataType
             return value;
         }
 
-        public object ConvertSourceToObject(PublishedPropertyType propertyType, object source, bool preview)
-        {
-            return source;
-        }
-
         public object ConvertSourceToXPath(PublishedPropertyType propertyType, object source, bool preview)
         {
-            throw new NotImplementedException();
+            // we don't really want to support XML for blocks
+            // so xpath == source == data == the original json
+            return source;
         }
 
         public bool IsConverter(PublishedPropertyType propertyType)
