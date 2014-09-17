@@ -122,52 +122,13 @@ namespace Zbu.Blocks.Mvc
             // render cached
             var text = (string) ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
                 key,
-                () => Renderer.ViewContent(context, block, model),
+                () => ((BlocksController) context.Controller).ViewInternal(block.Source, model),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration
                 false, // sliding
                 System.Web.Caching.CacheItemPriority.NotRemovable);
 
             var result = new ContentResult { Content = text };
             return result;
-        }
-
-        private static string ViewContent(ControllerContext context, RenderingBlock block, BlockModel model)
-        {
-            // this basically repeats what Controller.View is doing
-            // but Controller.View is protected so we cannot use it here
-
-            var viewEngineResult = ViewEngines.Engines.FindView(context, block.Source, null);
-            if (viewEngineResult == null)
-                throw new Exception("Null ViewEngineResult.");
-            var view = viewEngineResult.View;
-            if (view == null)
-            {
-                // we need to generate an exception containing all the locations we searched
-                // copied over from ViewResult source code
-                var locationsText = new StringBuilder();
-                foreach (var location in viewEngineResult.SearchedLocations)
-                {
-                    locationsText.AppendLine();
-                    locationsText.Append(location);
-                }
-                throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
-                    "The view '{0}' or its master was not found or no view engine supports the searched locations. The following locations were searched:{1}", // MvcResources.Common_ViewNotFound
-                    block.Source, locationsText)); 
-            }
-            
-            context.Controller.ViewData.Model = model;
-
-            string text;
-            using (var sw = new StringWriter())
-            {
-                var ctx = new ViewContext(context, view,
-                                          context.Controller.ViewData,
-                                          context.Controller.TempData,
-                                          sw);
-                view.Render(ctx, sw);
-                text = sw.ToString();
-            }
-            return text;
         }
 
         private static string GetCacheKey(RenderingBlock block, IPublishedContent content, System.Collections.Specialized.NameValueCollection querystring, ViewDataDictionary viewData)
