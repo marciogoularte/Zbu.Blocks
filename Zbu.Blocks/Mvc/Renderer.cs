@@ -89,14 +89,14 @@ namespace Zbu.Blocks.Mvc
                 System.Web.Caching.CacheItemPriority.NotRemovable);
         }
 
-        public static ActionResult View(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture)
+        public static string ViewText(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture)
         {
             var controller = BlockController.CreateController(context, block.Source);
-            var htm = controller.Render(content, block, currentCulture);
-            return new ContentResult {Content = htm.ToString()};
+            var text = controller.Render(content, block, currentCulture);
+            return text.ToString();
         }
 
-        public static ActionResult ViewWithCache(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture, bool refresh)
+        public static string ViewTextWithCache(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture, bool refresh)
         {
             var key = GetCacheKey(block, content, context.HttpContext.Request, null);
 
@@ -107,13 +107,12 @@ namespace Zbu.Blocks.Mvc
             // render cached
             var text = (string) ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
                 key,
-                () => View(context, content, block, currentCulture),
+                () => ViewText(context, content, block, currentCulture),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration
                 false, // sliding
                 System.Web.Caching.CacheItemPriority.NotRemovable);
 
-            var result = new ContentResult { Content = text };
-            return result;
+            return text;
         }
 
         private static string GetCacheKey(RenderingBlock block, IPublishedContent content, HttpRequestBase request, ViewDataDictionary viewData)
