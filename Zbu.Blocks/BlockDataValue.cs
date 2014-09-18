@@ -170,9 +170,7 @@ namespace Zbu.Blocks
         // is invoked by the converter after the whole structure property has been parsed
         public void EnsureFragments(bool preview)
         {
-            // FIXME - DISABLED
             // FIXME - Fragments are not native in Umbraco
-            // FIXME - Need to re-think what we want to do with them...
 
             //if (FragmentData != null && FragmentData.Count > 0)
             //{

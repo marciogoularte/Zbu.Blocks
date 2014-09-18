@@ -45,7 +45,7 @@ namespace Zbu.Blocks
 
         private static bool AppliesByContext(StructureDataValue structure, string context)
         {
-            // fixme - would we want to support negated contexts?
+            // todo - would we want to support negated contexts?
             // ie do NOT apply do 'ajax-*'? but to everything else?
 
             // null context => applies if has no contexts or contexts contains 'null'
