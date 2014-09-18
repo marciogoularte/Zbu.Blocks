@@ -96,7 +96,7 @@ namespace Zbu.Blocks.Mvc
             if (block.Cache == null || cacheMode == CacheMode.Ignore) // test null again so ReSharper is happy
                 return Renderer.BlockPartial(helper, block, blockModel, viewData);
 
-            var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request.QueryString, viewData);
+            var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request, viewData);
 
             // in order to refresh we have to flush before getting
             if (cacheMode == CacheMode.Refresh)
@@ -113,7 +113,7 @@ namespace Zbu.Blocks.Mvc
 
         public static ActionResult ViewWithCache(ControllerContext context, RenderingBlock block, BlockModel model, bool refresh)
         {
-            var key = GetCacheKey(block, model.Content, context.HttpContext.Request.QueryString, null);
+            var key = GetCacheKey(block, model.Content, context.HttpContext.Request, null);
 
             // in order to refresh we have to flush before getting
             if (refresh)
@@ -131,7 +131,7 @@ namespace Zbu.Blocks.Mvc
             return result;
         }
 
-        private static string GetCacheKey(RenderingBlock block, IPublishedContent content, System.Collections.Specialized.NameValueCollection querystring, ViewDataDictionary viewData)
+        private static string GetCacheKey(RenderingBlock block, IPublishedContent content, HttpRequestBase request, ViewDataDictionary viewData)
         {
             var key = "Zbu.Blocks__" + block.Source;
             var cache = block.Cache;
@@ -142,7 +142,7 @@ namespace Zbu.Blocks.Mvc
             if (cache.ByMember)
             {
                 // sure it's obsolete but what's the new way of getting the 'current' member ID?
-                // currently even v7 HtmlHelperRenderException uses the legacy API
+                // currently even v7 HtmlHelperRenderExtensions uses the legacy API
                 var member = Member.GetCurrentMember();
                 key += "__m:" + (member == null ? 0 : member.Id);
             }
@@ -150,7 +150,7 @@ namespace Zbu.Blocks.Mvc
             if (cache.ByQueryString != null)
             {
                 key = cache.ByQueryString.Aggregate(key, (current, vb) =>
-                    current + "__" + querystring[vb]);
+                    current + "__" + request.QueryString[vb]);
             }
 
             if (cache.ByProperty != null)
@@ -163,7 +163,7 @@ namespace Zbu.Blocks.Mvc
                 });
             }
 
-            var custom = cache.GetCacheCustom(block, content, viewData);
+            var custom = cache.GetCacheCustom(request, block, content, viewData);
             if (!string.IsNullOrWhiteSpace(custom))
             {
                 key += "__x:" + custom;

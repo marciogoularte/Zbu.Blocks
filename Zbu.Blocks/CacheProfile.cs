@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using Umbraco.Core.Models;
@@ -27,10 +28,10 @@ namespace Zbu.Blocks
         [JsonIgnore]
         public Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode> ModeFunc { get; set; }
         [JsonIgnore]
-        public Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string> CustomFunc { get; set; }
+        public Func<HttpRequestBase, RenderingBlock, IPublishedContent, ViewDataDictionary, string> CustomFunc { get; set; }
 
         internal static readonly Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode>> CacheMode = new Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode>>();
-        internal static readonly Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom = new Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>>();
+        internal static readonly Dictionary<string, Func<HttpRequestBase, RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom = new Dictionary<string, Func<HttpRequestBase, RenderingBlock, IPublishedContent, ViewDataDictionary, string>>();
         internal static readonly Dictionary<string, CacheProfile> Profiles = new Dictionary<string, CacheProfile>();
 
         public CacheProfile()
@@ -69,11 +70,11 @@ namespace Zbu.Blocks
             return modeFunc == null ? Blocks.CacheMode.Ignore : modeFunc(block, content, viewData);
         }
 
-        internal string GetCacheCustom(RenderingBlock block, IPublishedContent content, ViewDataDictionary viewData)
+        internal string GetCacheCustom(HttpRequestBase request, RenderingBlock block, IPublishedContent content, ViewDataDictionary viewData)
         {
             var customFunc = CustomFunc;
             if (!string.IsNullOrWhiteSpace(ByCustom) && !CacheCustom.TryGetValue(ByCustom, out customFunc)) return null;
-            return customFunc == null ? null : customFunc(block, content, viewData);
+            return customFunc == null ? null : customFunc(request, block, content, viewData);
         }
     }
 }

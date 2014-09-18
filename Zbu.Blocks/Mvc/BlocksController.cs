@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using Umbraco.Core.Models;
 using Umbraco.Web;
@@ -107,7 +108,7 @@ namespace Zbu.Blocks.Mvc
             }
 
             public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, CacheMode>> CacheMode { get { return CacheProfile.CacheMode; } }
-            public static Dictionary<string, Func<RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom { get { return CacheProfile.CacheCustom; } }
+            public static Dictionary<string, Func<HttpRequestBase, RenderingBlock, IPublishedContent, ViewDataDictionary, string>> CacheCustom { get { return CacheProfile.CacheCustom; } }
             public static Dictionary<string, CacheProfile> CacheProfiles { get { return CacheProfile.Profiles; } }
         }
 
