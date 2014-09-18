@@ -59,22 +59,14 @@ namespace Zbu.Blocks.Mvc
                     return args.Result;
             }
 
-            // create a basic BlockModel model - if the view wants a generic
-            // BlockModel<TContent> then UmbracoViewPage<> will map using the
-            // BlockModelTypeConverter.
-
-            // little point creating a strongly typed model here...
-            var m = new BlockModel(model.Content, rs, model.CurrentCulture);
-            //var m = CreateModel(model.Content, rs, model.CurrentCulture);
-
             // should we cache?
             var cacheMode = rs.Cache == null
                 ? CacheMode.Ignore
                 : rs.Cache.GetCacheMode(rs, model.Content, null);
 
             return cacheMode == CacheMode.Ignore
-                ? View(rs.Source, m)
-                : Renderer.ViewWithCache(ControllerContext, rs, m, cacheMode == CacheMode.Refresh);
+                ? Renderer.View(ControllerContext, model.Content, rs, model.CurrentCulture)
+                : Renderer.ViewWithCache(ControllerContext, model.Content, rs, model.CurrentCulture, cacheMode == CacheMode.Refresh);
         }
 
         //private static BlockModel<T> CreateModel<T>(T content, RenderingBlock rs, CultureInfo culture)

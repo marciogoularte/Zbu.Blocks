@@ -19,22 +19,8 @@ namespace Zbu.Blocks.Mvc
 {
     class Renderer
     {
-        private static MvcHtmlString BlockPartial(HtmlHelper helper, RenderingBlock block, BlockModel blockModel, ViewDataDictionary viewData)
-        {
-            var blockHtml = viewData == null
-                ? helper.Partial(block.Source, blockModel)
-                : helper.Partial(block.Source, blockModel, viewData);
-
-            var controller = helper.ViewContext.Controller as BlocksController;
-            var traceBlocksInHtml = controller != null && controller.TraceBlocksInHtml;
-            return !traceBlocksInHtml
-                ? blockHtml
-                : new MvcHtmlString(string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
-                    block.Source, Environment.NewLine, blockHtml));
-        }
-
         // basic, non-caching version
-        public static MvcHtmlString Block(HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
+        private static MvcHtmlString Block(HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
         {
             // nothing?
             if (block == null) return null;
@@ -45,9 +31,8 @@ namespace Zbu.Blocks.Mvc
             if (currentBlockModel == null)
                 throw new Exception("Model does not inherit from BlockModel.");
 
-            // create a block model for the block to render
-            // use a basic BlockModel and let the view deal with it
-            var blockModel = new BlockModel(currentBlockModel.Content, block, currentBlockModel.CurrentCulture);
+            var controller = BlockController.CreateController(helper, viewData, block.Source);
+            return controller.Render(currentBlockModel.Content, block, currentBlockModel.CurrentCulture);
 
             // we have:
             //   UmbracoViewPage<TModel> : WebViewPage<TModel>
@@ -68,9 +53,6 @@ namespace Zbu.Blocks.Mvc
             // However it does not know how to map BlockModel to BlockModel<TContent>
             // and that is an issue. So it will fallback to using a TypeConverter, which
             // we implemented in BlockModelTypeConverter.
-
-            // render that block
-            return Renderer.BlockPartial(helper, block, blockModel, viewData);
         }
 
         // caching version
@@ -85,16 +67,12 @@ namespace Zbu.Blocks.Mvc
             if (currentBlockModel == null)
                 throw new Exception("Model does not inherit from BlockModel.");
 
-            // create a block model for the block to render
-            // use a basic BlockModel and let the view deal with it
-            var blockModel = new BlockModel(currentBlockModel.Content, block, currentBlockModel.CurrentCulture);
-
             var cacheMode = block.Cache == null
                 ? CacheMode.Ignore
-                : block.Cache.GetCacheMode(block, blockModel.Content, viewData);
+                : block.Cache.GetCacheMode(block, currentBlockModel.Content, viewData);
 
             if (block.Cache == null || cacheMode == CacheMode.Ignore) // test null again so ReSharper is happy
-                return Renderer.BlockPartial(helper, block, blockModel, viewData);
+                return Block(helper, block, viewData);
 
             var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request, viewData);
 
@@ -105,15 +83,22 @@ namespace Zbu.Blocks.Mvc
             // render cached
             return (MvcHtmlString)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
                 key,
-                () => Renderer.BlockPartial(helper, block, blockModel, viewData),
+                () => Block(helper, block, viewData),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration
                 false, // sliding
                 System.Web.Caching.CacheItemPriority.NotRemovable);
         }
 
-        public static ActionResult ViewWithCache(ControllerContext context, RenderingBlock block, BlockModel model, bool refresh)
+        public static ActionResult View(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture)
         {
-            var key = GetCacheKey(block, model.Content, context.HttpContext.Request, null);
+            var controller = BlockController.CreateController(context, block.Source);
+            var htm = controller.Render(content, block, currentCulture);
+            return new ContentResult {Content = htm.ToString()};
+        }
+
+        public static ActionResult ViewWithCache(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture, bool refresh)
+        {
+            var key = GetCacheKey(block, content, context.HttpContext.Request, null);
 
             // in order to refresh we have to flush before getting
             if (refresh)
@@ -122,7 +107,7 @@ namespace Zbu.Blocks.Mvc
             // render cached
             var text = (string) ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
                 key,
-                () => ((BlocksController) context.Controller).ViewInternal(block.Source, model),
+                () => View(context, content, block, currentCulture),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration
                 false, // sliding
                 System.Web.Caching.CacheItemPriority.NotRemovable);

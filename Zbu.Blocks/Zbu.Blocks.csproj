@@ -115,6 +115,8 @@
     <Compile Include="CacheMode.cs" />
     <Compile Include="CacheProfile.cs" />
     <Compile Include="CacheProfileConverter.cs" />
+    <Compile Include="Mvc\BlockController.cs" />
+    <Compile Include="Mvc\BlockControllerAttribute.cs" />
     <Compile Include="Properties\CommonInfo.cs" />
     <Compile Include="Mvc\BlocksControllerFactory.cs" />
     <Compile Include="Mvc\BlockModelTypeConverter.cs" />
