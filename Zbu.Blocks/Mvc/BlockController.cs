@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -97,15 +98,26 @@ namespace Zbu.Blocks.Mvc
 
         #region Controllers
 
-        private static readonly Dictionary<string, Type> BlockControllers = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly Dictionary<string, Func<BlockController>> BlockControllers
+            = new Dictionary<string, Func<BlockController>>(StringComparer.InvariantCultureIgnoreCase);
 
         static BlockController()
         {
+            var noargs = new Type[0];
+
             foreach (var type in global::Umbraco.Core.TypeFinder.FindClassesOfType<BlockController>())
                 foreach (var blockSource in type.GetCustomAttributes(typeof (BlockControllerAttribute), false)
-                                                .Cast<BlockControllerAttribute>()
-                                                .Select(x => x.BlockSource))
-                    BlockControllers[blockSource] = type;
+                    .Cast<BlockControllerAttribute>()
+                    .Select(x => x.BlockSource))
+                {
+                    var ctor = type.GetConstructor(noargs);
+                    if (ctor == null)
+                        throw new Exception(string.Format("Could not find a proper constructor for type \"{0}\".", type));
+                    var exprNew = Expression.New(ctor);
+                    var expr = Expression.Lambda<Func<BlockController>>(exprNew);
+                    var func = expr.Compile();
+                    BlockControllers[blockSource] = func;
+                }
         }
 
         private class DefaultBlockController : BlockController
@@ -136,12 +148,10 @@ namespace Zbu.Blocks.Mvc
 
         private static BlockController CreateController(RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
-            Type type;
-            var controller = BlockControllers.TryGetValue(block.Source, out type)
-                ? Activator.CreateInstance(type) as BlockController
+            Func<BlockController> func;
+            var controller = BlockControllers.TryGetValue(block.Source, out func)
+                ? func()
                 : new DefaultBlockController();
-            if (controller == null)
-                throw new Exception(string.Format("Failed to create an instance of class \"{0}\".", type.FullName));
 
             controller.Block = block;
             controller.Content = content;
