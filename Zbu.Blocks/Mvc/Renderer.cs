@@ -32,7 +32,7 @@ namespace Zbu.Blocks.Mvc
             if (currentBlockModel == null)
                 throw new Exception("Model does not inherit from BlockModel.");
 
-            var controller = BlockController.CreateController(helper, block, currentBlockModel.Content, currentBlockModel.CurrentCulture, viewData);
+            var controller = BlockControllerBase.CreateController(helper, block, currentBlockModel.Content, currentBlockModel.CurrentCulture, viewData);
             return new MvcHtmlString(controller.RenderText());
 
             // we have:
@@ -92,7 +92,7 @@ namespace Zbu.Blocks.Mvc
 
         public static string ViewText(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
-            var controller = BlockController.CreateController(context, block, content, currentCulture);
+            var controller = BlockControllerBase.CreateController(context, block, content, currentCulture);
             return controller.RenderText();
         }
 

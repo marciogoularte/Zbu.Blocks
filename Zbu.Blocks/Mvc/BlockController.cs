@@ -13,18 +13,19 @@ using Umbraco.Web;
 
 namespace Zbu.Blocks.Mvc
 {
-    public abstract class BlockController
+    public abstract class BlockControllerBase
     {
         #region Controller
 
-        private HtmlHelper Helper { get; set; }
-        private ControllerContext ControllerContext { get; set; }
-        protected ViewDataDictionary ViewData { get; set; }
+        internal HtmlHelper Helper { get; set; }
+        internal ControllerContext ControllerContext { get; set; }
 
-        protected RenderingBlock Block { get; private set; }
-        protected IPublishedContent Content { get; private set; }
-        protected CultureInfo CurrentCulture { get; private set; }
-        protected UmbracoHelper Umbraco { get; private set; }
+        protected internal ViewDataDictionary ViewData { get; set; }
+        protected internal RenderingBlock Block { get; internal set; }
+        protected internal CultureInfo CurrentCulture { get; internal set; }
+        protected internal UmbracoHelper Umbraco { get; internal set; }
+
+        internal abstract void SetContent(IPublishedContent content);
 
         protected abstract string Render();
 
@@ -69,9 +70,9 @@ namespace Zbu.Blocks.Mvc
                     }
                     throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
                         "The view '{0}' or its master was not found or no view engine supports the searched locations. The following locations were searched:{1}", // MvcResources.Common_ViewNotFound
-                        Block.Source, locationsText)); 
+                        Block.Source, locationsText));
                 }
-            
+
                 controller.ViewData.Model = blockModel;
 
                 using (var sw = new StringWriter())
@@ -98,14 +99,14 @@ namespace Zbu.Blocks.Mvc
 
         #region Controllers
 
-        private static readonly Dictionary<string, Func<BlockController>> BlockControllers
-            = new Dictionary<string, Func<BlockController>>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly Dictionary<string, Func<BlockControllerBase>> BlockControllers
+            = new Dictionary<string, Func<BlockControllerBase>>(StringComparer.InvariantCultureIgnoreCase);
 
-        static BlockController()
+        static BlockControllerBase()
         {
             var noargs = new Type[0];
 
-            foreach (var type in global::Umbraco.Core.TypeFinder.FindClassesOfType<BlockController>())
+            foreach (var type in global::Umbraco.Core.TypeFinder.FindClassesOfType<BlockControllerBase>())
                 foreach (var blockSource in type.GetCustomAttributes(typeof (BlockControllerAttribute), false)
                     .Cast<BlockControllerAttribute>()
                     .Select(x => x.BlockSource))
@@ -114,24 +115,31 @@ namespace Zbu.Blocks.Mvc
                     if (ctor == null)
                         throw new Exception(string.Format("Could not find a proper constructor for type \"{0}\".", type));
                     var exprNew = Expression.New(ctor);
-                    var expr = Expression.Lambda<Func<BlockController>>(exprNew);
+                    var expr = Expression.Lambda<Func<BlockControllerBase>>(exprNew);
                     var func = expr.Compile();
                     BlockControllers[blockSource] = func;
                 }
         }
 
-        private class DefaultBlockController : BlockController
+        private class DefaultBlockController : BlockControllerBase
         {
+            private IPublishedContent _content;
+
+            internal override void SetContent(IPublishedContent content)
+            {
+                _content = content;
+            }
+
             protected override string Render()
             {
                 // create a block model for the block to render
                 // use a basic BlockModel and let the view deal with it
-                var blockModel = new BlockModel(Content, Block, CurrentCulture);
+                var blockModel = new BlockModel(_content, Block, CurrentCulture);
                 return Render(blockModel);
             }
         }
 
-        internal static BlockController CreateController(HtmlHelper helper, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture, ViewDataDictionary viewData)
+        internal static BlockControllerBase CreateController(HtmlHelper helper, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture, ViewDataDictionary viewData)
         {
             var c = CreateController(block, content, currentCulture);
             c.Helper = helper;
@@ -139,26 +147,45 @@ namespace Zbu.Blocks.Mvc
             return c;
         }
 
-        internal static BlockController CreateController(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
+        internal static BlockControllerBase CreateController(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
             var c = CreateController(block, content, currentCulture);
             c.ControllerContext = context;
             return c;
         }
 
-        private static BlockController CreateController(RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
+        private static BlockControllerBase CreateController(RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
-            Func<BlockController> func;
+            Func<BlockControllerBase> func;
             var controller = BlockControllers.TryGetValue(block.Source, out func)
                 ? func()
                 : new DefaultBlockController();
 
             controller.Block = block;
-            controller.Content = content;
+            controller.SetContent(content);
             controller.CurrentCulture = currentCulture;
             controller.Umbraco = new UmbracoHelper(UmbracoContext.Current, content);
 
             return controller;
+        }
+
+        #endregion
+    }
+
+    public abstract class BlockController<T> : BlockControllerBase
+        where T : class, IPublishedContent
+    {
+        #region Controller
+
+        protected T Content { get; private set; }
+
+        internal override void SetContent(IPublishedContent content)
+        {
+            var t = content as T;
+            if (t == null)
+                throw new Exception(string.Format("Invalid content type, got \"{0}\", controller expects \"{1}\".",
+                    content.GetType().FullName, typeof (T).FullName));
+            Content = t;
         }
 
         #endregion
