@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Umbraco.Core.Models;
+using Umbraco.Web;
 
 namespace Zbu.Blocks.Mvc
 {
@@ -19,19 +20,29 @@ namespace Zbu.Blocks.Mvc
         private ControllerContext ControllerContext { get; set; }
         protected ViewDataDictionary ViewData { get; set; }
 
-        public abstract MvcHtmlString Render(IPublishedContent content, RenderingBlock block, CultureInfo currentCulture);
+        protected RenderingBlock Block { get; private set; }
+        protected IPublishedContent Content { get; private set; }
+        protected CultureInfo CurrentCulture { get; private set; }
+        protected UmbracoHelper Umbraco { get; private set; }
 
-        protected MvcHtmlString Render(string source, BlockModel blockModel)
+        protected abstract string Render();
+
+        public virtual string RenderText()
         {
-            MvcHtmlString blockHtml;
+            return Render();
+        }
+
+        protected string Render(BlockModel blockModel)
+        {
+            string text;
             BlocksController controller;
 
             if (Helper != null)
             {
                 controller = Helper.ViewContext.Controller as BlocksController;
-                blockHtml = ViewData == null
-                    ? Helper.Partial(source, blockModel)
-                    : Helper.Partial(source, blockModel, ViewData);
+                text = ViewData == null
+                    ? Helper.Partial(Block.Source, blockModel).ToString()
+                    : Helper.Partial(Block.Source, blockModel, ViewData).ToString();
             }
             else if (ControllerContext != null)
             {
@@ -41,7 +52,7 @@ namespace Zbu.Blocks.Mvc
 
                 // this basically repeats what Controller.View is doing
 
-                var viewEngineResult = ViewEngines.Engines.FindView(ControllerContext, source, null);
+                var viewEngineResult = ViewEngines.Engines.FindView(ControllerContext, Block.Source, null);
                 if (viewEngineResult == null)
                     throw new Exception("Null ViewEngineResult.");
                 var view = viewEngineResult.View;
@@ -57,7 +68,7 @@ namespace Zbu.Blocks.Mvc
                     }
                     throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
                         "The view '{0}' or its master was not found or no view engine supports the searched locations. The following locations were searched:{1}", // MvcResources.Common_ViewNotFound
-                        source, locationsText)); 
+                        Block.Source, locationsText)); 
                 }
             
                 controller.ViewData.Model = blockModel;
@@ -69,7 +80,7 @@ namespace Zbu.Blocks.Mvc
                                               controller.TempData,
                                               sw);
                     view.Render(ctx, sw);
-                    blockHtml = new MvcHtmlString(sw.ToString());
+                    text = sw.ToString();
                 }
             }
             else
@@ -77,9 +88,9 @@ namespace Zbu.Blocks.Mvc
 
             var traceBlocksInHtml = controller != null && controller.TraceBlocksInHtml;
             return !traceBlocksInHtml
-                ? blockHtml
-                : new MvcHtmlString(string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
-                    source, Environment.NewLine, blockHtml));
+                ? text
+                : string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
+                    Block.Source, Environment.NewLine, text);
         }
 
         #endregion
@@ -90,7 +101,7 @@ namespace Zbu.Blocks.Mvc
 
         static BlockController()
         {
-            foreach (var type in Umbraco.Core.TypeFinder.FindClassesOfType<BlockController>())
+            foreach (var type in global::Umbraco.Core.TypeFinder.FindClassesOfType<BlockController>())
                 foreach (var blockSource in type.GetCustomAttributes(typeof (BlockControllerAttribute), false)
                                                 .Cast<BlockControllerAttribute>()
                                                 .Select(x => x.BlockSource))
@@ -99,38 +110,44 @@ namespace Zbu.Blocks.Mvc
 
         private class DefaultBlockController : BlockController
         {
-            public override MvcHtmlString Render(IPublishedContent content, RenderingBlock block, CultureInfo currentCulture)
+            protected override string Render()
             {
                 // create a block model for the block to render
                 // use a basic BlockModel and let the view deal with it
-                var blockModel = new BlockModel(content, block, currentCulture);
-                return Render(block.Source, blockModel);
+                var blockModel = new BlockModel(Content, Block, CurrentCulture);
+                return Render(blockModel);
             }
         }
 
-        internal static BlockController CreateController(HtmlHelper helper, ViewDataDictionary viewData, string source)
+        internal static BlockController CreateController(HtmlHelper helper, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture, ViewDataDictionary viewData)
         {
-            var c = CreateController(source);
+            var c = CreateController(block, content, currentCulture);
             c.Helper = helper;
             c.ViewData = viewData;
             return c;
         }
 
-        internal static BlockController CreateController(ControllerContext context, string source)
+        internal static BlockController CreateController(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
-            var c = CreateController(source);
+            var c = CreateController(block, content, currentCulture);
             c.ControllerContext = context;
             return c;
         }
 
-        private static BlockController CreateController(string source)
+        private static BlockController CreateController(RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
             Type type;
-            var controller = BlockControllers.TryGetValue(source, out type)
+            var controller = BlockControllers.TryGetValue(block.Source, out type)
                 ? Activator.CreateInstance(type) as BlockController
                 : new DefaultBlockController();
             if (controller == null)
                 throw new Exception(string.Format("Failed to create an instance of class \"{0}\".", type.FullName));
+
+            controller.Block = block;
+            controller.Content = content;
+            controller.CurrentCulture = currentCulture;
+            controller.Umbraco = new UmbracoHelper(UmbracoContext.Current, content);
+
             return controller;
         }
 

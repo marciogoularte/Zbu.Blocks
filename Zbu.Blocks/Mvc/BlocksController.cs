@@ -65,8 +65,8 @@ namespace Zbu.Blocks.Mvc
                 : rs.Cache.GetCacheMode(rs, model.Content, null);
 
             var text = cacheMode == CacheMode.Ignore
-                ? Renderer.ViewText(ControllerContext, model.Content, rs, model.CurrentCulture)
-                : Renderer.ViewTextWithCache(ControllerContext, model.Content, rs, model.CurrentCulture, cacheMode == CacheMode.Refresh);
+                ? Renderer.ViewText(ControllerContext, rs, model.Content, model.CurrentCulture)
+                : Renderer.ViewTextWithCache(ControllerContext, rs, model.Content, model.CurrentCulture, cacheMode == CacheMode.Refresh);
 
             return Content(text);
         }

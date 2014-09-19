@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Security;
+using umbraco;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Web;
@@ -31,8 +32,8 @@ namespace Zbu.Blocks.Mvc
             if (currentBlockModel == null)
                 throw new Exception("Model does not inherit from BlockModel.");
 
-            var controller = BlockController.CreateController(helper, viewData, block.Source);
-            return controller.Render(currentBlockModel.Content, block, currentBlockModel.CurrentCulture);
+            var controller = BlockController.CreateController(helper, block, currentBlockModel.Content, currentBlockModel.CurrentCulture, viewData);
+            return new MvcHtmlString(controller.RenderText());
 
             // we have:
             //   UmbracoViewPage<TModel> : WebViewPage<TModel>
@@ -89,14 +90,13 @@ namespace Zbu.Blocks.Mvc
                 System.Web.Caching.CacheItemPriority.NotRemovable);
         }
 
-        public static string ViewText(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture)
+        public static string ViewText(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
-            var controller = BlockController.CreateController(context, block.Source);
-            var text = controller.Render(content, block, currentCulture);
-            return text.ToString();
+            var controller = BlockController.CreateController(context, block, content, currentCulture);
+            return controller.RenderText();
         }
 
-        public static string ViewTextWithCache(ControllerContext context, IPublishedContent content, RenderingBlock block, CultureInfo currentCulture, bool refresh)
+        public static string ViewTextWithCache(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture, bool refresh)
         {
             var key = GetCacheKey(block, content, context.HttpContext.Request, null);
 
@@ -107,7 +107,7 @@ namespace Zbu.Blocks.Mvc
             // render cached
             var text = (string) ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
                 key,
-                () => ViewText(context, content, block, currentCulture),
+                () => ViewText(context, block, content, currentCulture),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration
                 false, // sliding
                 System.Web.Caching.CacheItemPriority.NotRemovable);
