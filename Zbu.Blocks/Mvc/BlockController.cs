@@ -36,6 +36,11 @@ namespace Zbu.Blocks.Mvc
 
         protected string Render(BlockModel blockModel)
         {
+            return Render(Block.Source, blockModel);
+        }
+
+        protected string Render(string source, BlockModel blockModel)
+        {
             string text;
             BlocksController controller;
 
@@ -43,8 +48,8 @@ namespace Zbu.Blocks.Mvc
             {
                 controller = Helper.ViewContext.Controller as BlocksController;
                 text = ViewData == null
-                    ? Helper.Partial(Block.Source, blockModel).ToString()
-                    : Helper.Partial(Block.Source, blockModel, ViewData).ToString();
+                    ? Helper.Partial(source, blockModel).ToString()
+                    : Helper.Partial(source, blockModel, ViewData).ToString();
             }
             else if (ControllerContext != null)
             {
@@ -54,7 +59,7 @@ namespace Zbu.Blocks.Mvc
 
                 // this basically repeats what Controller.View is doing
 
-                var viewEngineResult = ViewEngines.Engines.FindView(ControllerContext, Block.Source, null);
+                var viewEngineResult = ViewEngines.Engines.FindView(ControllerContext, source, null);
                 if (viewEngineResult == null)
                     throw new Exception("Null ViewEngineResult.");
                 var view = viewEngineResult.View;
@@ -70,7 +75,7 @@ namespace Zbu.Blocks.Mvc
                     }
                     throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
                         "The view '{0}' or its master was not found or no view engine supports the searched locations. The following locations were searched:{1}", // MvcResources.Common_ViewNotFound
-                        Block.Source, locationsText));
+                        source, locationsText));
                 }
 
                 controller.ViewData.Model = blockModel;
@@ -92,7 +97,7 @@ namespace Zbu.Blocks.Mvc
             return !traceBlocksInHtml
                 ? text
                 : string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
-                    Block.Source, Environment.NewLine, text);
+                    source, Environment.NewLine, text);
         }
 
         #endregion
