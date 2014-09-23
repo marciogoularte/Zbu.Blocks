@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Umbraco.Core.Models;
@@ -24,6 +25,18 @@ namespace Zbu.Blocks.Mvc
         protected internal RenderingBlock Block { get; internal set; }
         protected internal CultureInfo CurrentCulture { get; internal set; }
         protected internal UmbracoHelper Umbraco { get; internal set; }
+
+        protected HttpContextBase Context
+        {
+            get
+            {
+                if (Helper != null)
+                    return Helper.ViewContext.HttpContext;
+                if (ControllerContext != null)
+                    return ControllerContext.HttpContext;
+                throw new Exception("Oops.");
+            }
+        }
 
         internal abstract void SetContent(IPublishedContent content);
 
@@ -48,8 +61,8 @@ namespace Zbu.Blocks.Mvc
             {
                 controller = Helper.ViewContext.Controller as BlocksController;
                 text = ViewData == null
-                    ? Helper.Partial(source, blockModel).ToString()
-                    : Helper.Partial(source, blockModel, ViewData).ToString();
+                    ? Helper.Partial(source, blockModel).ToString() // will use the "current" viewData
+                    : Helper.Partial(source, blockModel, ViewData).ToString(); // uses our own local viewData
             }
             else if (ControllerContext != null)
             {
@@ -148,7 +161,7 @@ namespace Zbu.Blocks.Mvc
         {
             var c = CreateController(block, content, currentCulture);
             c.Helper = helper;
-            c.ViewData = viewData;
+            c.ViewData = viewData ?? helper.ViewData;
             return c;
         }
 
