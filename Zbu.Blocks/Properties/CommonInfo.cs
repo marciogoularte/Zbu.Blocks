@@ -28,9 +28,9 @@ using System.Runtime.InteropServices;
 // Also need to 
 
 // Assembly
-[assembly: AssemblyVersion("1.0.0.4")]
-[assembly: AssemblyFileVersion("1.0.0.4")]
+[assembly: AssemblyVersion("1.0.0.5")]
+[assembly: AssemblyFileVersion("1.0.0.5")]
 
 // NuGet Package
-[assembly: AssemblyInformationalVersion("1.0.0-alpha004")]
+[assembly: AssemblyInformationalVersion("1.0.0-alpha005")]
 // Do not remove this line.
