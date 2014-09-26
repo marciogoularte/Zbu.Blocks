@@ -169,6 +169,7 @@ namespace Zbu.Blocks.Mvc
         {
             var c = CreateController(block, content, currentCulture);
             c.ControllerContext = context;
+            c.ViewData = new ViewDataDictionary();
             return c;
         }
 
