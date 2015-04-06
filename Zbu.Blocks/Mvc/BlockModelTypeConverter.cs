@@ -29,7 +29,7 @@ namespace Zbu.Blocks.Mvc
                 throw new Exception("Source does not inherit from BlockModel.");
 
             var sourceContent = source.Content;
-            var sourceCulture = source.CurrentCulture;
+            //var sourceCulture = source.CurrentCulture;
 
             // destinationType is BlockModel<TContent> else CanConvertTo would have returned false
             var destinationContentType = destinationType.GetGenericArguments()[0];
@@ -38,7 +38,8 @@ namespace Zbu.Blocks.Mvc
                 throw new InvalidCastException(string.Format("Cannot cast source content type {0} to destination content type {1}.",
                     sourceContent.GetType(), destinationContentType));
 
-            return Activator.CreateInstance(destinationType, sourceContent, source.Block, sourceCulture);
+            //return Activator.CreateInstance(destinationType, sourceContent, source.Block, sourceCulture);
+            return Activator.CreateInstance(destinationType, sourceContent, source);
 
             //return base.ConvertTo(context, culture, value, destinationType);
         }

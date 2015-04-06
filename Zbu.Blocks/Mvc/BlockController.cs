@@ -26,6 +26,8 @@ namespace Zbu.Blocks.Mvc
         protected internal CultureInfo CurrentCulture { get; internal set; }
         protected internal UmbracoHelper Umbraco { get; internal set; }
 
+        internal IDictionary<string, object> Meta { get; private set; }
+
         protected HttpContextBase Context
         {
             get
@@ -42,7 +44,8 @@ namespace Zbu.Blocks.Mvc
 
         protected abstract string Render();
 
-        public virtual string RenderText()
+        // because Render() is protected
+        internal string RenderInternal()
         {
             return Render();
         }
@@ -105,6 +108,10 @@ namespace Zbu.Blocks.Mvc
             }
             else
                 throw new Exception("Oops.");
+
+            // propagate meta upwards
+            if (blockModel.HasMeta)
+                Meta = blockModel.Meta;
 
             var traceBlocksInHtml = controller != null && controller.TraceBlocksInHtml;
             return !traceBlocksInHtml

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using Umbraco.Core.Models;
@@ -23,5 +24,21 @@ namespace Zbu.Blocks.Mvc
         }
 
         public RenderingBlock Block { get; private set; }
+
+        #region Meta
+
+        private IDictionary<string, object> _meta;
+
+        public virtual IDictionary<string, object> Meta
+        {
+            get { return _meta ?? (_meta = new Dictionary<string, object>()); }
+        }
+
+        internal bool HasMeta
+        {
+            get { return _meta != null; }
+        }
+
+        #endregion
     }
 }

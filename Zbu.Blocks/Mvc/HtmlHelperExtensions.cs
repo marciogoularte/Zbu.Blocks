@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using System.Web.Mvc.Html;
-using umbraco;
-using umbraco.cms.businesslogic.member;
-using umbraco.cms.presentation.create.controls;
-using Umbraco.Core;
-using Umbraco.Web;
 
 namespace Zbu.Blocks.Mvc
 {
@@ -32,18 +25,28 @@ namespace Zbu.Blocks.Mvc
 
         public static MvcHtmlString Block(this HtmlHelper helper, RenderingBlock block)
         {
-            return Renderer.BlockWithCache(helper, block, null);
+            return helper.Block(block, null);
         }
 
         public static MvcHtmlString Block(this HtmlHelper helper, RenderingBlock block, object o)
         {
             var viewData = o == null ? null : o.AsViewDataDictionary();
-            return Renderer.BlockWithCache(helper, block, viewData);
+            return helper.Block(block, viewData);
         }
 
         private static MvcHtmlString Block(this HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
         {
-            return Renderer.BlockWithCache(helper, block, viewData);
+            var rendered = Renderer.BlockWithCache(helper, block, viewData);
+            var text = rendered.Item1;
+            var meta = rendered.Item2;
+
+            var model = helper.ViewData.Model as BlockModel;
+            if (model == null) throw new Exception("oops.");
+
+            if (BlocksController.Settings.MergeMeta != null && meta != null)
+                BlocksController.Settings.MergeMeta(model, meta);
+
+            return new MvcHtmlString(text);
         }
 
         private static ViewDataDictionary AsViewDataDictionary(this object o)

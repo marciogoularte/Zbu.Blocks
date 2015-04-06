@@ -14,6 +14,7 @@ namespace Zbu.Blocks.Mvc
         private static bool _registered;
         private static string _structuresPropertyAlias = "structures";
         private static Func<BlocksController, string> _getContext;
+        private static Action<BlockModel, IDictionary<string, object>> _mergeMeta;
 
         public class GetActionResultEventArgs : EventArgs
         {
@@ -98,6 +99,16 @@ namespace Zbu.Blocks.Mvc
                 {
                     EnsureWriteable();
                     _getContext = value;
+                }
+            }
+
+            public static Action<BlockModel, IDictionary<string, object>> MergeMeta
+            {
+                get { return _mergeMeta; }
+                set
+                {
+                    EnsureWriteable();
+                    _mergeMeta = value;
                 }
             }
 

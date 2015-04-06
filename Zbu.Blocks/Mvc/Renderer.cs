@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Mime;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Mvc.Html;
-using System.Web.Security;
-using umbraco;
 using Umbraco.Core;
+using Umbraco.Core.Cache;
 using Umbraco.Core.Models;
 using Umbraco.Web;
-using Umbraco.Core.Security;
 using Member = umbraco.cms.businesslogic.member.Member;
 
 namespace Zbu.Blocks.Mvc
@@ -21,7 +16,7 @@ namespace Zbu.Blocks.Mvc
     class Renderer
     {
         // basic, non-caching version
-        private static MvcHtmlString Block(HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
+        private static Tuple<string, IDictionary<string, object>> Block(HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
         {
             // nothing?
             if (block == null) return null;
@@ -33,7 +28,9 @@ namespace Zbu.Blocks.Mvc
                 throw new Exception("Model does not inherit from BlockModel.");
 
             var controller = BlockControllerBase.CreateController(helper, block, currentBlockModel.Content, currentBlockModel.CurrentCulture, viewData);
-            return new MvcHtmlString(controller.RenderText());
+            var text = controller.RenderInternal();
+            var meta = controller.Meta; // this is how we get it back...
+            return Tuple.Create(text, meta);
 
             // we have:
             //   UmbracoViewPage<TModel> : WebViewPage<TModel>
@@ -57,7 +54,7 @@ namespace Zbu.Blocks.Mvc
         }
 
         // caching version
-        public static MvcHtmlString BlockWithCache(HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
+        public static Tuple<string, IDictionary<string, object>> BlockWithCache(HtmlHelper helper, RenderingBlock block, ViewDataDictionary viewData)
         {
             // nothing?
             if (block == null) return null;
@@ -75,25 +72,27 @@ namespace Zbu.Blocks.Mvc
             if (block.Cache == null || cacheMode == CacheMode.Ignore) // test null again so ReSharper is happy
                 return Block(helper, block, viewData);
 
+            var cache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
             var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request, viewData);
 
             // in order to refresh we have to flush before getting
             if (cacheMode == CacheMode.Refresh)
-                ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheByKeySearch(key);
+                cache.ClearCacheByKeySearch(key);
 
-            // render cached
-            return (MvcHtmlString)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
+            var cached = (Tuple<string, IDictionary<String, object>>) cache.GetCacheItem(
                 key,
                 () => Block(helper, block, viewData),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration
                 false, // sliding
                 System.Web.Caching.CacheItemPriority.NotRemovable);
+
+            return cached;
         }
 
         public static string ViewText(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture)
         {
             var controller = BlockControllerBase.CreateController(context, block, content, currentCulture);
-            return controller.RenderText();
+            return controller.RenderInternal();
         }
 
         public static string ViewTextWithCache(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture, bool refresh)
