@@ -71,9 +71,12 @@ namespace Zbu.Blocks.Tests
 
         public virtual void ClearCacheObjectTypes(string typeName)
         {
+#if UMBRACO_6
+#else
             var type = TypeFinder.GetTypeByName(typeName);
             if (type == null) return;
             var isInterface = type.IsInterface;
+#endif
             using (new WriteLock(_locker))
             {
                 foreach (var key in MemoryCache
@@ -86,7 +89,11 @@ namespace Zbu.Blocks.Tests
 
                         // if T is an interface remove anything that implements that interface
                         // otherwise remove exact types (not inherited types)
+#if UMBRACO_6
+                        return value == null || value.GetType().ToString().InvariantEquals(typeName);
+#else
                         return value == null || (isInterface ? (type.IsInstanceOfType(value)) : (value.GetType() == type));
+#endif
                     })
                     .Select(x => x.Key)
                     .ToArray()) // ToArray required to remove

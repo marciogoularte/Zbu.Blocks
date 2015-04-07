@@ -196,7 +196,13 @@ namespace Zbu.Blocks.Mvc
 
             // support unit tests
             if (RunContext.IsTesting && UmbracoContext.Current == null)
+#if UMBRACO_6
+                // U6 is missing the parameter-less constructor
+                // don't run unit tests on U6 but on U7...
+                controller.Umbraco = null;
+#else
                 controller.Umbraco = new UmbracoHelper();
+#endif
             else
                 controller.Umbraco = new UmbracoHelper(UmbracoContext.Current, content);
 
