@@ -140,6 +140,7 @@
     <Compile Include="RenderingStructure.cs" />
     <Compile Include="StructureDataValue.cs" />
     <Compile Include="TempStructure.cs" />
+    <Compile Include="RunContext.cs" />
     <Compile Include="WithLevel.cs" />
   </ItemGroup>
   <ItemGroup>

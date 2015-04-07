@@ -136,9 +136,9 @@ namespace Zbu.Blocks.Mvc
 
         public bool TraceBlocksInHtml { get; private set; }
 
-        internal ViewResult ViewInternal(string viewName, object model)
-        {
-            return View(viewName, model);
-        }
+        //internal ViewResult ViewInternal(string viewName, object model)
+        //{
+        //    return View(viewName, model);
+        //}
     }
 }

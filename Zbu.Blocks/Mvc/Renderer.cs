@@ -72,8 +72,9 @@ namespace Zbu.Blocks.Mvc
             if (block.Cache == null || cacheMode == CacheMode.Ignore) // test null again so ReSharper is happy
                 return Block(helper, block, viewData);
 
-            var cache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
-            var key = GetCacheKey(block, currentBlockModel.Content, helper.ViewContext.HttpContext.Request, viewData);
+            var cache = RunContext.RuntimeCache;
+            var request = RunContext.IsTesting ? null : helper.ViewContext.HttpContext.Request; // todo: Environment.GetRequest(helper) OR mock request
+            var key = GetCacheKey(block, currentBlockModel.Content, request, viewData);
 
             // in order to refresh we have to flush before getting
             if (cacheMode == CacheMode.Refresh)
@@ -97,14 +98,15 @@ namespace Zbu.Blocks.Mvc
 
         public static string ViewTextWithCache(ControllerContext context, RenderingBlock block, IPublishedContent content, CultureInfo currentCulture, bool refresh)
         {
+            var cache = RunContext.RuntimeCache;
             var key = GetCacheKey(block, content, context.HttpContext.Request, null);
 
             // in order to refresh we have to flush before getting
             if (refresh)
-                ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheByKeySearch(key);
+                cache.ClearCacheByKeySearch(key);
 
             // render cached
-            var text = (string) ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
+            var text = (string) cache.GetCacheItem(
                 key,
                 () => ViewText(context, block, content, currentCulture),
                 new TimeSpan(0, 0, 0, block.Cache.Duration), // duration

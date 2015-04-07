@@ -58,19 +58,22 @@ namespace Zbu.Blocks.Mvc
         protected string Render(string source, BlockModel blockModel)
         {
             string text;
-            BlocksController controller;
+            ControllerBase controller;
+            BlocksController blocksController;
 
             if (Helper != null)
             {
-                controller = Helper.ViewContext.Controller as BlocksController;
+                controller = Helper.ViewContext.Controller;
+                blocksController = controller as BlocksController;
                 text = ViewData == null
                     ? Helper.Partial(source, blockModel).ToString() // will use the "current" viewData
                     : Helper.Partial(source, blockModel, ViewData).ToString(); // uses our own local viewData
             }
             else if (ControllerContext != null)
             {
-                controller = ControllerContext.Controller as BlocksController;
-                if (controller == null)
+                controller = ControllerContext.Controller;
+                blocksController = controller as BlocksController;
+                if (!RunContext.IsTesting && blocksController == null)
                     throw new Exception("Oops.");
 
                 // this basically repeats what Controller.View is doing
@@ -113,7 +116,7 @@ namespace Zbu.Blocks.Mvc
             if (blockModel.HasMeta)
                 Meta = blockModel.Meta;
 
-            var traceBlocksInHtml = controller != null && controller.TraceBlocksInHtml;
+            var traceBlocksInHtml = blocksController != null && blocksController.TraceBlocksInHtml;
             return !traceBlocksInHtml
                 ? text
                 : string.Format("<!-- block:{0} -->{1}{2}{1}<!-- /block:{0} -->{1}",
@@ -190,7 +193,12 @@ namespace Zbu.Blocks.Mvc
             controller.Block = block;
             controller.SetContent(content);
             controller.CurrentCulture = currentCulture;
-            controller.Umbraco = new UmbracoHelper(UmbracoContext.Current, content);
+
+            // support unit tests
+            if (RunContext.IsTesting && UmbracoContext.Current == null)
+                controller.Umbraco = new UmbracoHelper();
+            else
+                controller.Umbraco = new UmbracoHelper(UmbracoContext.Current, content);
 
             return controller;
         }
